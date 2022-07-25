@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: app.server
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [annotation-api, app-name, http-client, jackson-databind, java, java-application, junit, logback, lombok, maven, mongo-reactive, netty-server, reactor, reactor-http-client, readme, security-annotations, security-jwt, shade, testcontainers, yaml]
