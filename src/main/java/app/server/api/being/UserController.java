@@ -14,17 +14,16 @@ import jakarta.inject.Inject;
 public class UserController { // TODO api/user/ -> feed, profile, friend, followed, info,
     @Inject
     UserService userService;
-
     @Get("/search/{query}")
     public HttpResponse<String> search(String query) { // TODO
         return HttpResponse.ok();
     }
-    @Get("/profile/{userId}")
+    @Get("/{userId}/profile/")
     public HttpResponse<String> profile(String userId) {
         //
         return HttpResponse.ok(userId);
     }
-    @Get("/profile/{userId}/friends/")
+    @Get("/{userId}/profile/friends/")
     public HttpResponse<String> friends(String userId) { // TODO
         return HttpResponse.ok();
     }

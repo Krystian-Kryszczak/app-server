@@ -15,9 +15,9 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotNull;
 
-@Secured(SecurityRule.IS_ANONYMOUS) //@PermitAll
+@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("api/v1/account")
-public class AccountController { // TODO cookie, jwt
+public class AccountController {
     @Inject
     AccountService accountService;
     @Post(value = "/register", consumes = MediaType.APPLICATION_JSON)
@@ -34,9 +34,3 @@ public class AccountController { // TODO cookie, jwt
         return Mono.from(accountService.resetPassword(code, password));
     }
 }
-/*javax.annotation.security.PermitAll
-javax.annotation.security.RolesAllowed
-javax.annotation.security.DenyAll
-jakarta.annotation.security.PermitAll
-jakarta.annotation.security.RolesAllowed
-jakarta.annotation.security.DenyAll*/

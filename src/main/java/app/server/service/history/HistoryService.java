@@ -2,4 +2,4 @@ package app.server.service.history;
 
 import app.server.model.history.History;
 
-public abstract class HistoryService<T extends History> {}
+public interface HistoryService<T extends History> {}
