@@ -20,6 +20,8 @@ import static io.micronaut.security.authentication.AuthenticationFailureReason.U
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Inject
     UserService userService;
+    @Inject
+    PasswordEncoder passwordEncoder;
     @Override
     public Publisher<AuthenticationResponse> authenticate(@Nullable HttpRequest<?> httpRequest, AuthenticationRequest<?, ?> authenticationRequest) {
         final String login = authenticationRequest.getIdentity().toString(); // username
@@ -27,7 +29,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         return Mono.from(userService.findByEmail(login))
             .flatMap(user -> Mono.<AuthenticationResponse>create(
                 emitter -> {
-                    if (user.getPassword().equals(PasswordEncoder.sha256(password))) {
+                    if (passwordEncoder.matches(password, user.getPassword())) {
                         emitter.success(AuthenticationResponse.success((String) authenticationRequest.getIdentity()));
                         System.out.println(login);
                     } else {

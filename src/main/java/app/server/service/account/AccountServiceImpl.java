@@ -30,11 +30,15 @@ import java.util.UUID;
 
 @Singleton
 public class AccountServiceImpl implements AccountService {
-    static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
+    final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Inject
-    static ApplicationConfiguration.InstanceConfiguration instanceConfiguration;
-    @Inject static UserRepository userRepository;
-    @Inject static ResetPasswordRepository resetPasswordRepository;
+    ApplicationConfiguration.InstanceConfiguration instanceConfiguration;
+    @Inject
+    UserRepository userRepository;
+    @Inject
+    PasswordEncoder passwordEncoder;
+    @Inject
+    ResetPasswordRepository resetPasswordRepository;
     @Override
     public Publisher<ObjectId> register(@Email String email, @NotNull @Size(min = 2, max = 60) String name, @NotNull @Size(min = 2, max = 60) String lastname,
                                         @NotNull @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$") String password)
@@ -45,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new RuntimeException() {
                 };
             }).switchIfEmpty(
-                    Mono.from(userRepository.save(new User(name, lastname, email, PasswordEncoder.sha256(password)))) // Save new user in database
+                    Mono.from(userRepository.save(new User(name, lastname, email, passwordEncoder.encode(password)))) // Save new user in database
                             .flatMap(insertOneResult -> Mono.from(userRepository.findByEmail(email)).mapNotNull(user -> {
                                 logger.info("New account was created! (" + user.getEmail() + ")");
                                 BsonValue value = insertOneResult.getInsertedId();
@@ -78,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
         }).defaultIfEmpty(HttpStatus.CONFLICT);
     }
     @Override
-    public Publisher<HttpResponse<HttpStatus>> resetPassword(@NonNull String code, @NotNull String password) { // OK
+    public Publisher<HttpResponse<HttpStatus>> resetPassword(@NonNull String code, @NotNull String newPassword) { // OK
         return Mono.from(resetPasswordRepository.find(code)).flatMap(resetCode -> Mono.create(
                 monoSink -> {
                     // ---------------------------------------------------------------------------------------------------- // [Code has been expired]
@@ -94,7 +98,7 @@ public class AccountServiceImpl implements AccountService {
                         // ---------------------------------------------------------------------------------------------------- // [Else]
                     } else { // code was found in database
                         Mono.from(userRepository.findById(resetCode.getUserId())).flatMap(
-                                user -> Mono.from(userRepository.resetPassword(resetCode.getUserId(), password)) // if user has been found in database
+                                user -> Mono.from(userRepository.resetPassword(resetCode.getUserId(), passwordEncoder.encode(newPassword))) // if user has been found in database
                                         .flatMap(
                                                 newUser -> Mono.from(resetPasswordRepository.delete(code)) // Successful
                                                         .map(v -> {
