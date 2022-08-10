@@ -8,6 +8,7 @@ import io.micronaut.core.annotation.NonNull;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import javax.validation.constraints.NotBlank;
@@ -22,7 +23,7 @@ public class Snap extends Exhibit<Snap> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Snap(@NonNull @BsonId String hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("video") String video, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+    public Snap(@NonNull @BsonId ObjectId hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("video") String video, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
         super(hexId, rating, dateTime);
         this.video = video;
     }
@@ -37,10 +38,10 @@ public class Snap extends Exhibit<Snap> {
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
-        return getReport().reportSnap(getHexId(), user, content);
+        return getReport().reportSnap(getId(), user, content);
     }
     @Override
     public Publisher<Boolean> reportToAdmin(@NonNull User user, @NonNull String content) {
-        return getReport().reportSnapToAdmin(getHexId(), user, content);
+        return getReport().reportSnapToAdmin(getId(), user, content);
     }
 }

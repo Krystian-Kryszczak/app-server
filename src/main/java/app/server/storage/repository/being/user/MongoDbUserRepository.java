@@ -1,8 +1,7 @@
 package app.server.storage.repository.being.user;
 
 import app.server.model.being.user.User;
-import app.server.security.PasswordEncoder;
-import app.server.security.PasswordEncoderImpl;
+import app.server.security.encoder.PasswordEncoder;
 import app.server.storage.MongoDbConfiguration;
 import app.server.storage.repository.being.BeingMongoDbRepository;
 import com.mongodb.reactivestreams.client.MongoClient;

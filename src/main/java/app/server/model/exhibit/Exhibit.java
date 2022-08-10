@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
@@ -27,7 +28,7 @@ public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & h
     // --------------------------------------------------------------------------- //
     @Nullable
     @BsonId
-    final String hexId;
+    final ObjectId id;
     @Nullable
     @BsonProperty("rating")
     Integer rating; // voting
@@ -37,13 +38,13 @@ public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & h
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Exhibit(@NonNull @BsonId String hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
-        this.hexId = hexId;
+    public Exhibit(@NonNull @BsonId ObjectId id, @BsonProperty("rating") int rating, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+        this.id = id;
         this.rating = rating;
         this.dateTime = dateTime;
     }
     public Exhibit() {
-        this.hexId = null;
+        this.id = null;
         this.rating = null;
         this.dateTime = LocalDateTime.now();
     }
@@ -102,12 +103,12 @@ public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & h
     }
     // --------------------------------------------------------------------------- //
     public String getUrl() {
-        String hexId = getHexId();
-        return hexId!=null ? "/"+this.getClass().getSimpleName().toLowerCase()+"/"+getHexId()+"/" : "";
+        ObjectId id = getId();
+        return id!=null ? "/"+this.getClass().getSimpleName().toLowerCase()+"/"+ getId().toHexString()+"/" : "";
     }
     protected String abstractUrl(String prefix) {
-        String hexId = getHexId();
-        return hexId!=null ? "/"+prefix+"/"+getHexId()+"/" : "";
+        ObjectId id = getId();
+        return id!=null ? "/"+prefix+"/"+ getId().toHexString()+"/" : "";
     }
     // --------------------------------------------------------------------------- //
     protected ReportService getReport() {
@@ -115,9 +116,9 @@ public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & h
     }
     // --------------------------------------------------------------------------- //
     @SuppressWarnings("all")
-    public String getHexId() throws NullPointerException {
-        if (getHexId()==null) throw new NullPointerException(getClass().getSimpleName()+" hexId equals null.");
-        return hexId;
+    public ObjectId getId() throws NullPointerException {
+        if (getId()==null) throw new NullPointerException(getClass().getSimpleName()+" hexId equals null.");
+        return id;
     }
     // #Reporting
     public abstract Publisher<Boolean> report(@NonNull User user, @NonNull @NotBlank String content);

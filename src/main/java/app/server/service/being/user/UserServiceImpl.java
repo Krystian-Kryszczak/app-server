@@ -2,8 +2,7 @@ package app.server.service.being.user;
 
 import app.server.model.being.user.User;
 import app.server.model.being.user.UserDto;
-import app.server.security.PasswordEncoder;
-import app.server.security.PasswordEncoderImpl;
+import app.server.security.encoder.PasswordEncoder;
 import app.server.storage.repository.being.user.UserRepository;
 import app.server.storage.repository.history.user.UserHistoryRepository;
 import jakarta.inject.Inject;

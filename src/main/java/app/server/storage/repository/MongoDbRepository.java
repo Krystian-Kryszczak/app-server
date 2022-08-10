@@ -3,13 +3,11 @@ package app.server.storage.repository;
 import app.server.storage.MongoDbConfiguration;
 import com.mongodb.reactivestreams.client.MongoClient;
 import io.micronaut.core.annotation.NonNull;
-import jakarta.inject.Singleton;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 
-@Singleton
 public abstract class MongoDbRepository {
     private final MongoDbConfiguration mongoConf;
     private final MongoClient mongoClient;

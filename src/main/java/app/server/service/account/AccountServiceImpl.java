@@ -2,7 +2,7 @@ package app.server.service.account;
 
 import app.server.model.being.user.User;
 import app.server.model.reset.ResetCode;
-import app.server.security.PasswordEncoder;
+import app.server.security.encoder.PasswordEncoder;
 import app.server.storage.repository.being.user.UserRepository;
 import app.server.storage.repository.reset.ResetPasswordRepository;
 import com.mongodb.client.result.InsertOneResult;

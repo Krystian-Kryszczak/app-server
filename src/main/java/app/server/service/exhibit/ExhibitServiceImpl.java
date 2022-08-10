@@ -13,7 +13,7 @@ public abstract class ExhibitServiceImpl<T extends Exhibit<T>> implements Exhibi
     @Override
     public Mono<Integer> vote(@NonNull User user, @NonNull T exhibit, boolean up) throws NullPointerException {
         String userHexId = user.getId().toHexString(),
-        exhibitHexId = exhibit.getHexId();
+        exhibitHexId = exhibit.getId().toHexString();
         if (userHexId==null) throw new NullPointerException("User hexId equal null!!");
         if (exhibitHexId==null) throw new NullPointerException("Exhibit hexId equal null!!");
         return vote(userHexId, exhibitHexId, up);
@@ -29,7 +29,7 @@ public abstract class ExhibitServiceImpl<T extends Exhibit<T>> implements Exhibi
     @Override
     public Mono<Boolean> getVote(@NonNull User user, @NonNull T exhibit) throws NullPointerException {
         String userHexId = user.getId().toHexString(),
-        exhibitHexId = exhibit.getHexId();
+        exhibitHexId = exhibit.getId().toHexString();
         if (userHexId==null) throw new NullPointerException("User hexId equal null!!");
         if (exhibitHexId==null) throw new NullPointerException("Exhibit hexId equal null!!");
         return getVote(userHexId, exhibitHexId);
@@ -41,7 +41,7 @@ public abstract class ExhibitServiceImpl<T extends Exhibit<T>> implements Exhibi
     @Override
     public Mono<Integer> cancelVote(@NonNull User user, @NonNull T exhibit) throws NullPointerException {
         String userHexId = user.getId().toHexString(),
-        exhibitHexId = exhibit.getHexId();
+        exhibitHexId = exhibit.getId().toHexString();
         if (userHexId==null) throw new NullPointerException("User hexId equal null!!");
         if (exhibitHexId==null) throw new NullPointerException("Exhibit hexId equal null!!");
         return cancelVote(userHexId, exhibitHexId);

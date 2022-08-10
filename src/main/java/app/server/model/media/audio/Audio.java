@@ -13,6 +13,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.Binary;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class Audio extends Streamable<Audio> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Audio(@Nullable @BsonId String hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
+    public Audio(@Nullable @BsonId ObjectId hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
                  @NonNull @BsonProperty("dateTime") LocalDateTime dateTime, @NonNull @BsonProperty("binary") Binary binary) {
         super(hexId, name, creatorHexId, dateTime, binary);
     }
@@ -42,17 +43,18 @@ public class Audio extends Streamable<Audio> {
     // ---------------------------------------------------------------------------------------------------- //
     @Override
     public String getMediaUrl() {
-        String hexId = getHexId();
-        return hexId!=null ? "/audio/"+hexId+"/" : "";
+        ObjectId id = getId();
+        return id!=null ? "/audio/"+id.toHexString()+"/" : "";
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
-        String hexId = getHexId();
-        if (hexId==null) throw new NullPointerException("Audio "+getName()+" hexId equals null.");
-        return reportService.reportAudio(hexId, user, content);
+        ObjectId id = getId();
+        if (id==null) throw new NullPointerException("Audio "+getName()+" hexId equals null.");
+        return reportService.reportAudio(id, user, content);
     }
     @Override
     public Publisher<Audio> delete() {
-        return audioService.deleteAudio(getHexId());
+        if (getId()==null) throw new NullPointerException("Audio Id equal null.");
+        return audioService.deleteAudio(getId().toHexString());
     }
 }

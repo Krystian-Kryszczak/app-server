@@ -1,6 +1,6 @@
 package app.server.security.authentication;
 
-import app.server.security.PasswordEncoder;
+import app.server.security.encoder.PasswordEncoder;
 import app.server.service.being.user.UserService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;

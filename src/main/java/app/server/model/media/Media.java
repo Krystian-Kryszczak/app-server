@@ -10,6 +10,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.Binary;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import javax.validation.constraints.NotBlank;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @Introspected
 public abstract class Media<T extends Media<T>> {
     @BsonId
-    final String hexId;
+    final ObjectId id;
     @NonNull
     @BsonProperty("name")
     final String name;
@@ -38,16 +39,16 @@ public abstract class Media<T extends Media<T>> {
     @Creator
     @BsonCreator
     public Media(
-            @Nullable @BsonId String hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
+            @Nullable @BsonId ObjectId id, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
             @NonNull @BsonProperty("dateTime") LocalDateTime dateTime, @NonNull @BsonProperty("binary") Binary binary) {
-        this.hexId = hexId;
+        this.id = id;
         this.name = name;
         this.creatorHexId = creatorHexId;
         this.dateTime = dateTime;
         this.binary = binary;
     }
     public Media(@NonNull String name, @NonNull String creatorHexId, @NonNull Binary binary) {
-        this.hexId = null;
+        this.id = null;
         this.name = name;
         this.creatorHexId = creatorHexId;
         this.dateTime = LocalDateTime.now();
@@ -55,7 +56,7 @@ public abstract class Media<T extends Media<T>> {
     }
     @Deprecated
     public Media(@NonNull String name, @NonNull String creatorHexId, @NonNull File file) throws IOException {
-        this.hexId = null;
+        this.id = null;
         this.name = name;
         this.creatorHexId = creatorHexId;
         this.dateTime = LocalDateTime.now();
@@ -63,8 +64,8 @@ public abstract class Media<T extends Media<T>> {
     }
     // ---------------------------------------------------------------------------------------------------- //
     @Nullable
-    public String getHexId() {
-        return hexId;
+    public ObjectId getId() {
+        return id;
     }
     @NonNull
     public String getName() {

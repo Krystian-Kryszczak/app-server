@@ -13,6 +13,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.Binary;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import javax.validation.constraints.NotBlank;
@@ -29,7 +30,7 @@ public class Video extends Streamable<Video> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Video(@Nullable @BsonId String hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
+    public Video(@Nullable @BsonId ObjectId hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
                  @NonNull @BsonProperty("dateTime") LocalDateTime dateTime, @NonNull @BsonProperty("binary") Binary binary) {
         super(hexId, name, creatorHexId, dateTime, binary);
     }
@@ -43,17 +44,18 @@ public class Video extends Streamable<Video> {
     // ---------------------------------------------------------------------------------------------------- //
     @Override
     public String getMediaUrl() {
-        String hexId = getHexId();
-        return hexId!=null ? "/videos/"+hexId+"/" : "";
+        ObjectId id = getId();
+        return id!=null ? "/videos/"+id.toHexString()+"/" : "";
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull @NotBlank String content) {
-        String hexId = getHexId();
-        if (hexId==null) throw new NullPointerException("Video "+getName()+" hexId equals null.");
-        return reportService.reportVideo(hexId, user, content);
+        ObjectId id = getId();
+        if (id==null) throw new NullPointerException("Video "+getName()+" hexId equals null.");
+        return reportService.reportVideo(id, user, content);
     }
     @Override
-    public Publisher<Video> delete() {
-        return videoService.deleteVideo(getHexId());
+    public Publisher<Video> delete() throws NullPointerException {
+        if (getId()==null) throw new NullPointerException("Video Id equal null.");
+        return videoService.deleteVideo(getId().toHexString());
     }
 }

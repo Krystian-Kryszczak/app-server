@@ -4,7 +4,7 @@ import app.server.model.exhibit.song.Song;
 import app.server.service.exhibit.ExhibitServiceImpl;
 import app.server.service.history.being.user.UserHistoryService;
 import app.server.storage.repository.exhibit.ExhibitRepository;
-import app.server.storage.repository.exhibit.music.song.SongRepository;
+import app.server.storage.repository.exhibit.song.SongRepository;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import reactor.core.publisher.Mono;

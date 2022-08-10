@@ -13,6 +13,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.Binary;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class Image extends Media<Image> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Image(@Nullable @BsonId String hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
+    public Image(@Nullable @BsonId ObjectId hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
                  @NonNull @BsonProperty("dateTime") LocalDateTime dateTime, @NonNull @BsonProperty("binary") Binary binary) {
         super(hexId, name, creatorHexId, dateTime, binary);
     }
@@ -42,17 +43,18 @@ public class Image extends Media<Image> {
     // ---------------------------------------------------------------------------------------------------- //
     @Override
     public String getMediaUrl() {
-        String hexId = getHexId();
-        return hexId!=null ? "/images/"+hexId+"/" : "";
+        ObjectId id = getId();
+        return id!=null ? "/images/"+id.toHexString()+"/" : "";
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
-        String hexId = getHexId();
-        if (hexId==null) throw new NullPointerException("Image "+getName()+" hexId equals null.");
-        return reportService.reportImage(hexId, user, content);
+        ObjectId id = getId();
+        if (id==null) throw new NullPointerException("Image "+getName()+" hexId equals null.");
+        return reportService.reportImage(id, user, content);
     }
     @Override
     public Publisher<Image> delete() {
-        return imageService.deleteImage(getHexId());
+        if (getId()==null) throw new NullPointerException("Image Id equal null.");
+        return imageService.deleteImage(getId().toHexString());
     }
 }

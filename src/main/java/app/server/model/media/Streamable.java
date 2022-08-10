@@ -8,6 +8,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.Binary;
+import org.bson.types.ObjectId;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public abstract class Streamable<T extends Media<T>> extends Media<T> {
     @Creator
     @BsonCreator
     public Streamable(
-            @Nullable @BsonId String hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
+            @Nullable @BsonId ObjectId hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
             @NonNull @BsonProperty("dateTime") LocalDateTime dateTime, @NonNull @BsonProperty("binary") Binary binary) {
         super(hexId, name, creatorHexId, dateTime, binary);
     }

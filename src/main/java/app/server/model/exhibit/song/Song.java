@@ -8,6 +8,7 @@ import io.micronaut.core.annotation.NonNull;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import javax.validation.constraints.NotBlank;
@@ -22,7 +23,7 @@ public class Song extends Exhibit<Song> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Song(@NonNull @BsonId String hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("datetime") LocalDateTime dateTime, @NonNull @BsonProperty("audio") String audio) {
+    public Song(@NonNull @BsonId ObjectId hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("datetime") LocalDateTime dateTime, @NonNull @BsonProperty("audio") String audio) {
         super(hexId, rating, dateTime);
         this.audio = audio;
     }
@@ -37,10 +38,10 @@ public class Song extends Exhibit<Song> {
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
-        return getReport().reportSong(getHexId(), user, content);
+        return getReport().reportSong(getId(), user, content);
     }
     @Override
     public Publisher<Boolean> reportToAdmin(@NonNull User user, @NonNull String content) {
-        return getReport().reportSongToAdmin(getHexId(), user, content);
+        return getReport().reportSongToAdmin(getId(), user, content);
     }
 }

@@ -8,6 +8,7 @@ import io.micronaut.core.annotation.NonNull;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import javax.validation.constraints.NotBlank;
@@ -22,7 +23,7 @@ public class Reel extends Exhibit<Reel> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Reel(@NonNull @BsonId String hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("video") String video, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+    public Reel(@NonNull @BsonId ObjectId hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("video") String video, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
         super(hexId, rating, dateTime);
         this.video = video;
     }
@@ -37,10 +38,10 @@ public class Reel extends Exhibit<Reel> {
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
-        return getReport().reportReel(getHexId(), user, content);
+        return getReport().reportReel(getId(), user, content);
     }
     @Override
     public Publisher<Boolean> reportToAdmin(@NonNull User user, @NonNull String content) {
-        return getReport().reportReelToAdmin(getHexId(), user, content);
+        return getReport().reportReelToAdmin(getId(), user, content);
     }
 }

@@ -6,11 +6,9 @@ import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import io.micronaut.core.annotation.NonNull;
-import jakarta.inject.Singleton;
 import org.bson.Document;
 import org.reactivestreams.Publisher;
 
-@Singleton
 public abstract class ExtendedMongoDbRepository<T> extends MongoDbRepository {
     final String collectionName;
     final Class<T> clazz;

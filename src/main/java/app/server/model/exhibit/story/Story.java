@@ -8,6 +8,7 @@ import io.micronaut.core.annotation.NonNull;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import javax.validation.constraints.NotBlank;
@@ -22,7 +23,7 @@ public class Story extends Exhibit<Story> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Story(@NonNull @BsonId String hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("media") String media, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+    public Story(@NonNull @BsonId ObjectId hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("media") String media, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
         super(hexId, rating, dateTime);
         this.media = media;
     }
@@ -37,10 +38,10 @@ public class Story extends Exhibit<Story> {
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
-        return getReport().reportStory(getHexId(), user, content);
+        return getReport().reportStory(getId(), user, content);
     }
     @Override
     public Publisher<Boolean> reportToAdmin(@NonNull User user, @NonNull String content) {
-        return getReport().reportStoryToAdmin(getHexId(), user, content);
+        return getReport().reportStoryToAdmin(getId(), user, content);
     }
 }

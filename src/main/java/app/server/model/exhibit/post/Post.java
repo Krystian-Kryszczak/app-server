@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ public class Post extends Exhibit<Post> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Post(@NonNull @BsonId String hexId, @NonNull @BsonProperty("rating") int rating, @NonNull @BsonProperty("caption") String caption, @NonNull @BsonProperty("datetime") LocalDateTime dateTime, @NonNull @BsonProperty("media") List<String> media) {
+    public Post(@NonNull @BsonId ObjectId hexId, @NonNull @BsonProperty("rating") int rating, @NonNull @BsonProperty("caption") String caption, @NonNull @BsonProperty("datetime") LocalDateTime dateTime, @NonNull @BsonProperty("media") List<String> media) {
         super(hexId, rating, dateTime);
         this.caption = caption;
         this.media = media;
@@ -76,10 +77,10 @@ public class Post extends Exhibit<Post> {
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
-        return getReport().reportPost(getHexId(), user, content);
+        return getReport().reportPost(getId(), user, content);
     }
     @Override
     public Publisher<Boolean> reportToAdmin(@NonNull User user, @NonNull String content) {
-        return getReport().reportPostToAdmin(getHexId(), user, content);
+        return getReport().reportPostToAdmin(getId(), user, content);
     }
 }

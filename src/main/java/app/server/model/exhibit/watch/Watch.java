@@ -8,6 +8,7 @@ import io.micronaut.core.annotation.NonNull;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 
 import javax.validation.constraints.NotBlank;
@@ -22,7 +23,7 @@ public class Watch extends Exhibit<Watch> {
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Watch(@NonNull @BsonId String hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("video") String video, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+    public Watch(@NonNull @BsonId ObjectId hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("video") String video, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
         super(hexId, rating, dateTime);
         this.video = video;
     }
@@ -32,10 +33,10 @@ public class Watch extends Exhibit<Watch> {
     }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
-        return getReport().reportWatch(getHexId(), user, content);
+        return getReport().reportWatch(getId(), user, content);
     }
     @Override
     public Publisher<Boolean> reportToAdmin(@NonNull User user, @NonNull String content) {
-        return getReport().reportWatchToAdmin(getHexId(), user, content);
+        return getReport().reportWatchToAdmin(getId(), user, content);
     }
 }
