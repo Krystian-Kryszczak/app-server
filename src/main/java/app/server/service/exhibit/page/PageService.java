@@ -1,4 +1,4 @@
-package app.server.service.being.page;
+package app.server.service.exhibit.page;
 
 import app.server.model.exhibit.page.Page;
 import app.server.service.exhibit.ExhibitService;

@@ -3,6 +3,8 @@ package app.server.service.being.user;
 import app.server.model.being.user.User;
 import app.server.model.being.user.UserDto;
 import app.server.service.being.BeingService;
+import io.micronaut.http.HttpStatus;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
@@ -13,4 +15,5 @@ public interface UserService extends BeingService<User> {
     Publisher<User> findByEmail(String email);
     Publisher<User> findById(String hexId);
     Optional<UserDto> toUserDto(User user);
+    Mono<HttpStatus> addToFriend(ObjectId clientId, ObjectId friendId);
 }

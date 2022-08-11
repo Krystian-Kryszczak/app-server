@@ -4,17 +4,18 @@ import app.server.security.encoder.PasswordEncoder;
 import app.server.service.being.user.UserService;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
-import io.micronaut.security.authentication.AuthenticationFailed;
-import io.micronaut.security.authentication.AuthenticationProvider;
-import io.micronaut.security.authentication.AuthenticationRequest;
-import io.micronaut.security.authentication.AuthenticationResponse;
+import io.micronaut.security.authentication.*;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 import static io.micronaut.security.authentication.AuthenticationFailureReason.CREDENTIALS_DO_NOT_MATCH;
 import static io.micronaut.security.authentication.AuthenticationFailureReason.USER_NOT_FOUND;
+import static io.micronaut.security.authentication.AuthenticationFailureReason.CUSTOM;
 
 @Singleton
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -30,8 +31,12 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             .flatMap(user -> Mono.<AuthenticationResponse>create(
                 emitter -> {
                     if (passwordEncoder.matches(password, user.getPassword())) {
-                        emitter.success(AuthenticationResponse.success((String) authenticationRequest.getIdentity()));
-                        System.out.println(login);
+                        ObjectId userId = user.getId();
+                        if (userId!=null) {
+                            emitter.success(AuthenticationResponse.success(login, Map.of("id", user.getId().toHexString())));
+                        } else {
+                            emitter.error(AuthenticationResponse.exception(CUSTOM));
+                        }
                     } else {
                         emitter.error(AuthenticationResponse.exception(CREDENTIALS_DO_NOT_MATCH));
                     }
