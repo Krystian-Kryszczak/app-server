@@ -16,5 +16,5 @@ public interface ExhibitRepository<T extends Exhibit<T>> extends Repository<T> {
     Mono<Boolean> getVote(@NonNull @NotBlank String userHexId, @NonNull @NotBlank String exhibitHexId);
     @NonNull
     @Deprecated
-    Mono<Integer> changeRating(@NonNull @NotBlank String exhibitHexId, int value);
+    Mono<Integer> incrementRating(@NonNull @NotBlank String exhibitHexId, int value);
 }

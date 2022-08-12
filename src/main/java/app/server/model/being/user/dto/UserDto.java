@@ -1,4 +1,4 @@
-package app.server.model.being.user;
+package app.server.model.being.user.dto;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;

@@ -42,8 +42,8 @@ public class HistoryMongoDbRepository<T extends History, V extends Being> extend
         Bson filter = eq("userId", hexId); // equal
         return Flux.from(getCollection().find(filter)
             .sort(descending("datetime"))
-                .limit(limit)
-                  .skip(skip));
+              .skip(skip)
+                .limit(limit));
     }
     @Override
     public Flux<T> getHistory(@NonNull V being, @Min(value = 1) @Max(value = 12) int limit) {

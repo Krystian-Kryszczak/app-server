@@ -1,4 +1,4 @@
-package app.server.model.being.user;
+package app.server.model.being.user.configuration;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.core.annotation.NonNull;

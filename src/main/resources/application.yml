@@ -61,6 +61,8 @@ mongodb:
 db:
   name: 'app'
   user-collection: 'user'
+  user-profile-collection: 'user-profile'
+  user-friends-collection: 'user-friends'
   group-collection: 'group'
   page-collection: 'page'
   post-collection: 'post'

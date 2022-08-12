@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bson.types.ObjectId;
 
 import java.time.LocalDateTime;
 
@@ -14,32 +15,32 @@ import java.time.LocalDateTime;
 public abstract class History {
     @Nullable
     @BsonId
-    final String hexId;
+    final ObjectId id;
     @NonNull
     @BsonProperty("datetime")
     final LocalDateTime dateTime;
     @NonNull
     @BsonProperty("user")
-    final String userHexId;
+    final ObjectId userId;
     @NonNull
     @BsonProperty("target")
-    final String target; // HexId
+    final ObjectId target; //
     @Nullable
     @BsonProperty("content")
     final String content;
     @Creator
     @BsonCreator
-    protected History(@NonNull @BsonId String hexId, @NonNull @BsonProperty("user") String userHexId, @NonNull @BsonProperty("target") String target, @Nullable @BsonProperty("content") String content) {
-        this.hexId = hexId;
+    protected History(@NonNull @BsonId ObjectId id, @NonNull @BsonProperty("user") ObjectId userId, @NonNull @BsonProperty("target") ObjectId target, @Nullable @BsonProperty("content") String content) {
+        this.id = id;
         this.dateTime = LocalDateTime.now();
-        this.userHexId = userHexId;
+        this.userId = userId;
         this.target = target;
         this.content = content;
     }
-    protected History(@NonNull String userHexId, @NonNull String target, @Nullable String content) {
-        this.hexId = null;
+    protected History(@NonNull ObjectId userId, @NonNull ObjectId target, @Nullable String content) {
+        this.id = null;
         this.dateTime = LocalDateTime.now();
-        this.userHexId = userHexId;
+        this.userId = userId;
         this.target = target;
         this.content = content;
     }

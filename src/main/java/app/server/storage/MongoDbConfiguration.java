@@ -9,6 +9,10 @@ public interface MongoDbConfiguration extends Named {
     @NonNull
     String getUserCollection();
     @NonNull
+    String getUserProfileCollection();
+    @NonNull
+    String getUserFriendsCollection();
+    @NonNull
     String getGroupCollection();
     @NonNull
     String getPageCollection();

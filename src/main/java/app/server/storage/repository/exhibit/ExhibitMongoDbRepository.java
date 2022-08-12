@@ -61,14 +61,14 @@ public abstract class ExhibitMongoDbRepository<T extends Exhibit<T>> extends Ext
     public Mono<Boolean> getVote(@NonNull @NotBlank String userHexId, @NonNull @NotBlank String exhibitHexId) {
         Bson bsonId = getBsonEq_id(exhibitHexId);
         return Mono.from(getDocCollection().find(bsonId).projection(Projections.fields(elemMatch("up", exists(userHexId)))).first())
-            .then(Mono.just(true))
+            .thenReturn(true)
                 .switchIfEmpty(Mono.from(getDocCollection().find(bsonId).projection(Projections.fields(elemMatch("down", exists(userHexId)))).first())
-                        .then(Mono.just(false)));
+                    .thenReturn(false));
     }
     // ---------------------------------------------------------------------------------------------------- //
     @NonNull
     @Deprecated
-    public Mono<Integer> changeRating(@NonNull @NotBlank String exhibitHexId, int value) {
+    public Mono<Integer> incrementRating(@NonNull @NotBlank String exhibitHexId, int value) {
         Bson bsonId = getBsonEq_id(exhibitHexId);
         return Mono.from(getDocCollection().find(bsonId).first())
             .flatMap(doc -> Mono.from(getCollection().findOneAndUpdate(bsonId, Updates.inc("rating", value)))
