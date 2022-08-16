@@ -1,8 +1,12 @@
 package app.server.model.exhibit;
 
+import app.server.model.StorageItem;
 import app.server.model.being.user.User;
 import app.server.model.comment.Comment;
-import app.server.model.comment.SortBy;
+import app.server.model.comment.sorting.SortBy;
+import app.server.service.being.user.UserService;
+import app.server.service.exhibit.ExhibitService;
+import app.server.service.history.exhibit.ExhibitHistoryService;
 import app.server.service.report.ReportService;
 import com.google.gson.Gson;
 import io.micronaut.core.annotation.Creator;
@@ -16,13 +20,17 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Introspected
-public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & hide exhibit
+public abstract class Exhibit<T extends Exhibit<T>> implements StorageItem { // TODO delete & hide exhibit
+    @Inject
+    static ExhibitHistoryService exhibitHistoryService;
+    @Inject
+    static UserService userService;
     @Inject
     static ReportService reportService;
     // --------------------------------------------------------------------------- //
@@ -54,16 +62,31 @@ public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & h
         return rating;
     }
     public Publisher<Integer> voteUp(@NonNull User user) {
-        return null;
-        // TODO local variable update (optional)
+        return voteUp(user.getId());
     }
     public Publisher<Integer> voteDown(@NonNull User user) {
-        return null;
-        // TODO local variable update (optional)
+        return voteDown(user.getId());
     }
-    public Publisher<Integer> cancelVote() {
-        // TODO local variable update (optional)
-        return null;
+    public Publisher<Integer> voteUp(ObjectId userObjectId) {
+        if (userObjectId==null) return Mono.just(getRating());
+        return voteUp(userObjectId.toHexString());
+    }
+    public Publisher<Integer> voteDown(ObjectId userObjectId) {
+        if (userObjectId==null) return Mono.just(getRating());
+        return voteDown(userObjectId.toHexString());
+    }
+    protected Publisher<Integer> voteUp(@NonNull String userHexId) {
+        return getExhibitService().vote(userHexId, getId().toHexString(), true);
+    }
+    protected Publisher<Integer> voteDown(@NonNull String userHexId) {
+        return getExhibitService().vote(userHexId, getId().toHexString(), false);
+    }
+    protected Publisher<Integer> cancelVote(@NonNull String userHexId) {
+        return Mono.from(getExhibitService().cancelVote(userHexId, getId().toHexString()));
+    }
+    protected void setRating(int value) { // LocalVariable
+        if (rating!=null)
+            rating = value;
     }
     protected void localRateUp() { // LocalVariable
         if (rating!=null)
@@ -81,25 +104,28 @@ public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & h
         if (rating!=null)
             rating-=value;
     }
-    // --------------------------------------------------------------------------- // // TODO
-    public Flux<List<Comment>> getComments(@NonNull User user, @Nullable SortBy sortBy) {
+    protected Integer getLocalRating() { // LocalVariable
+        return rating;
+    }
+    // --------------------------------------------------------------------------- //
+    public Flux<Comment> getComments(@NonNull String userHexId, @Nullable SortBy sortBy) {
         return null; // TODO
     }
-    public Flux<String> addComment(@NonNull User user, @NonNull @NotBlank String content) {
+    public Mono<String> addComment(@NonNull String userHexId, @NonNull @NotBlank String content) {
         return null; // TODO
     }
-    public Flux<String> editComment(@NonNull User user, @NonNull @NotBlank String hexId, @NonNull @NotBlank String newContent) {
+    public Mono<String> editComment(@NonNull String userHexId, @NonNull @NotBlank String hexId, @NonNull @NotBlank String newContent) {
         return null; // TODO
     }
-    public Flux<Boolean> removeComment(@NonNull User user, @NonNull @NotBlank String hexId) {
+    public Mono<Boolean> removeComment(@NonNull String userHexId, @NonNull @NotBlank String hexId) {
         return null; // TODO
     }
-    public Flux<Boolean> hideComment(@NonNull User user, @NonNull @NotBlank String hexId) {
+    public Mono<Boolean> hideComment(@NonNull String userHexId, @NonNull @NotBlank String hexId) {
         return null; // TODO
     }
     // --------------------------------------------------------------------------- //
-    public Flux<Boolean> shareOnProfile(@NonNull User user) {
-        return null; // TODO
+    public Mono<Boolean> shareOnProfile(@NonNull String userHexId) {
+        return userService.shareOnProfile(userHexId, this.getId().toHexString(), getClassName());
     }
     // --------------------------------------------------------------------------- //
     public String getUrl() {
@@ -109,10 +135,6 @@ public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & h
     protected String abstractUrl(String prefix) {
         ObjectId id = getId();
         return id!=null ? "/"+prefix+"/"+ getId().toHexString()+"/" : "";
-    }
-    // --------------------------------------------------------------------------- //
-    protected ReportService getReport() {
-        return reportService;
     }
     // --------------------------------------------------------------------------- //
     @SuppressWarnings("all")
@@ -128,9 +150,17 @@ public abstract class Exhibit<T extends Exhibit<T>> { // TODO // TODO delete & h
         return new Gson().toJson(this);
     }
     // #History
-    public Flux<String> getHistory(@NonNull User user) {
-        // TODO check permissions
-        String SimpleName = getClass().getSimpleName();
-        return null; // TODO
+    public abstract Flux<String> getHistory(@NonNull String userHexId);
+    public ExhibitHistoryService getExhibitHistoryService() {
+        return exhibitHistoryService;
+    }
+    // --------------------------------------------------------------------------- //
+    protected ReportService getReport() {
+        return reportService;
+    }
+    protected abstract ExhibitService<T> getExhibitService();
+    // --------------------------------------------------------------------------- //
+    private String getClassName() {
+        return this.getClass().getSimpleName();
     }
 }

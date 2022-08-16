@@ -9,8 +9,4 @@ import org.reactivestreams.Publisher;
 
 import java.io.IOException;
 
-public interface ImageService extends MediaService<Image> {
-    Publisher<InsertOneResult> saveImage(String creatorHexId, @NonNull CompletedFileUpload file) throws IOException;
-    Publisher<Image> getImage(String hexId);
-    Publisher<Image> deleteImage(String hexId);
-}
+public interface ImageService extends MediaService<Image> {}

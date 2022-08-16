@@ -6,7 +6,7 @@ import app.server.model.being.user.profile.UserProfile;
 import app.server.security.encoder.PasswordEncoder;
 import app.server.storage.repository.being.user.UserRepository;
 import app.server.storage.repository.being.user.friends.UserFriendsRepository;
-import app.server.storage.repository.history.user.UserHistoryRepository;
+import app.server.storage.repository.history.being.user.UserBeingHistoryRepository;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpStatus;
 import jakarta.inject.Inject;
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Inject
     PasswordEncoder passwordEncoder;
     @Inject
-    UserHistoryRepository userHistoryRepo;
+    UserBeingHistoryRepository userHistoryRepo;
     // ---------------------------------------------------------------------------------------------------- //
     public Mono<UserDto> createUser(String name, String lastname, String email, String password) {
         User user = User.builder().name(name).lastname(lastname).email(email).password(passwordEncoder.encode(password)).build();
@@ -67,7 +67,28 @@ public class UserServiceImpl implements UserService {
     public Flux<String> searchUsers(String query) {
         return Flux.empty(); // TODO
     }
-    public Mono<List<String>> getUserFriends(ObjectId clientId) {
-        return userFriendsRepository.findFriendsListByUserId(clientId);
+    @Override
+    public Mono<Boolean> shareOnProfile(String userHexId, String exhibitHexId, String exhibitClassName) {
+        return null;
+    }
+    // Media //
+    public Flux<String> video(String userHexId) {
+        return Flux.empty(); // TODO
+    }
+    public Flux<String> shorts(String userHexId) {
+        return Flux.empty(); // TODO
+    }
+    public Flux<String> images(String userHexId) {
+        return Flux.empty(); // TODO
+    }
+    public Flux<String> songs(String userHexId) {
+        return Flux.empty(); // TODO
+    }
+    public Flux<String> followed(String userHexId) {
+        return Flux.empty(); // TODO
+    }
+    // Friends //
+    public Flux<String> getUserFriends(String userHexId) {
+        return userFriendsRepository.findFriendsByUserId(userHexId);
     }
 }

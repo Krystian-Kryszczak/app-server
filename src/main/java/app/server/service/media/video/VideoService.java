@@ -9,8 +9,4 @@ import org.reactivestreams.Publisher;
 
 import java.io.IOException;
 
-public interface VideoService extends MediaService<Video> {
-    Publisher<InsertOneResult> saveVideo(String creatorHexId, @NonNull CompletedFileUpload file) throws IOException;
-    Publisher<Video> getVideo(String hexId);
-    Publisher<Video> deleteVideo(String hexId);
-}
+public interface VideoService extends MediaService<Video> {}

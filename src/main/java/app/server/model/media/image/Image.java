@@ -30,15 +30,16 @@ public class Image extends Media<Image> {
     @Creator
     @BsonCreator
     public Image(@Nullable @BsonId ObjectId hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
-                 @NonNull @BsonProperty("dateTime") LocalDateTime dateTime, @NonNull @BsonProperty("binary") Binary binary) {
-        super(hexId, name, creatorHexId, dateTime, binary);
+                 @Nullable @BsonProperty("isPrivate") Boolean isPrivate, @NonNull @BsonProperty("dateTime") LocalDateTime dateTime,
+                 @NonNull @BsonProperty("binary") Binary binary) {
+        super(hexId, name, creatorHexId, isPrivate, dateTime, binary);
     }
-    public Image(@NonNull String name, @NonNull String creatorHexId, @NonNull Binary binary) {
-        super(name, creatorHexId, binary);
+    public Image(@NonNull String name, @NonNull String creatorHexId, @Nullable Boolean isPrivate, @NonNull Binary binary) {
+        super(name, creatorHexId, isPrivate, binary);
     }
     @Deprecated
-    public Image(@NonNull String name, @NonNull String creatorHexId, @NonNull File file) throws IOException {
-        super(name, creatorHexId, file);
+    public Image(@NonNull String name, @NonNull String creatorHexId, @Nullable Boolean isPrivate, @NonNull File file) throws IOException {
+        super(name, creatorHexId, isPrivate, file);
     }
     // ---------------------------------------------------------------------------------------------------- //
     @Override
@@ -54,7 +55,7 @@ public class Image extends Media<Image> {
     }
     @Override
     public Publisher<Image> delete() {
-        if (getId()==null) throw new NullPointerException("Image Id equal null.");
-        return imageService.deleteImage(getId().toHexString());
+        if (getId()==null) throw new NullPointerException("Image ID equal null.");
+        return imageService.delete(getId().toHexString());
     }
 }

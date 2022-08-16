@@ -30,15 +30,16 @@ public class Audio extends Streamable<Audio> {
     @Creator
     @BsonCreator
     public Audio(@Nullable @BsonId ObjectId hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
-                 @NonNull @BsonProperty("dateTime") LocalDateTime dateTime, @NonNull @BsonProperty("binary") Binary binary) {
-        super(hexId, name, creatorHexId, dateTime, binary);
+                 @Nullable @BsonProperty("isPrivate") Boolean isPrivate, @NonNull @BsonProperty("dateTime") LocalDateTime dateTime,
+                 @NonNull @BsonProperty("binary") Binary binary) {
+        super(hexId, name, creatorHexId, isPrivate, dateTime, binary);
     }
-    public Audio(@NonNull String name, @NonNull String creatorHexId, @NonNull Binary binary) {
-        super(name, creatorHexId, binary);
+    public Audio(@NonNull String name, @NonNull String creatorHexId, @Nullable Boolean isPrivate, @NonNull Binary binary) {
+        super(name, creatorHexId, isPrivate, binary);
     }
     @Deprecated
-    public Audio(@NonNull String name, @NonNull String creatorHexId, @NonNull File file) throws IOException {
-        super(name, creatorHexId, file);
+    public Audio(@NonNull String name, @NonNull String creatorHexId, @Nullable Boolean isPrivate, @NonNull File file) throws IOException {
+        super(name, creatorHexId, isPrivate, file);
     }
     // ---------------------------------------------------------------------------------------------------- //
     @Override
@@ -54,7 +55,7 @@ public class Audio extends Streamable<Audio> {
     }
     @Override
     public Publisher<Audio> delete() {
-        if (getId()==null) throw new NullPointerException("Audio Id equal null.");
-        return audioService.deleteAudio(getId().toHexString());
+        if (getId()==null) throw new NullPointerException("Audio ID equal null.");
+        return audioService.delete(getId().toHexString());
     }
 }

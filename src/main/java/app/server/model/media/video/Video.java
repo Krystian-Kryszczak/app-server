@@ -31,15 +31,16 @@ public class Video extends Streamable<Video> {
     @Creator
     @BsonCreator
     public Video(@Nullable @BsonId ObjectId hexId, @NonNull @BsonProperty("name") String name, @NonNull @BsonProperty("creatorHexId") String creatorHexId,
-                 @NonNull @BsonProperty("dateTime") LocalDateTime dateTime, @NonNull @BsonProperty("binary") Binary binary) {
-        super(hexId, name, creatorHexId, dateTime, binary);
+                 @Nullable @BsonProperty("isPrivate") Boolean isPrivate, @NonNull @BsonProperty("dateTime") LocalDateTime dateTime,
+                 @NonNull @BsonProperty("binary") Binary binary) {
+        super(hexId, name, creatorHexId, isPrivate, dateTime, binary);
     }
-    public Video(@NonNull String name, @NonNull String creatorHexId, @NonNull Binary binary) {
-        super(name, creatorHexId, binary);
+    public Video(@NonNull String name, @NonNull String creatorHexId, @Nullable Boolean isPrivate, @NonNull Binary binary) {
+        super(name, creatorHexId, isPrivate, binary);
     }
     @Deprecated
-    public Video(@NonNull String name, @NonNull String creatorHexId, @NonNull File file) throws IOException {
-        super(name, creatorHexId, file);
+    public Video(@NonNull String name, @NonNull String creatorHexId, @Nullable Boolean isPrivate, @NonNull File file) throws IOException {
+        super(name, creatorHexId, isPrivate, file);
     }
     // ---------------------------------------------------------------------------------------------------- //
     @Override
@@ -55,7 +56,7 @@ public class Video extends Streamable<Video> {
     }
     @Override
     public Publisher<Video> delete() throws NullPointerException {
-        if (getId()==null) throw new NullPointerException("Video Id equal null.");
-        return videoService.deleteVideo(getId().toHexString());
+        if (getId()==null) throw new NullPointerException("Video ID equal null.");
+        return videoService.delete(getId().toHexString());
     }
 }

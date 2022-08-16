@@ -19,10 +19,17 @@ public interface UserService extends BeingService<User> {
     Publisher<User> findById(String hexId);
     Optional<UserDto> toUserDto(User user);
     Mono<UserProfile> getUserProfile(ObjectId userId);
-    Mono<List<String>> getUserFriends(ObjectId clientId);
+    Flux<String> getUserFriends(String userHexId);
     Mono<HttpStatus> addToFriends(ObjectId clientId, ObjectId friendId);
     Mono<HttpStatus> removeFromFriends(ObjectId clientId, ObjectId friendId);
     Mono<List<String>> proposedFriendsForUser(ObjectId clientId);
     Flux<String> searchUsers(String query, ObjectId userId);
     Flux<String> searchUsers(String query);
+    Mono<Boolean> shareOnProfile(String userHexId, String exhibitHexId, String exhibitClassName);
+    // Media //
+    Flux<String> video(String userHexId);
+    Flux<String> shorts(String userHexId);
+    Flux<String> images(String userHexId);
+    Flux<String> songs(String userHexId);
+    Flux<String> followed(String userHexId);
 }

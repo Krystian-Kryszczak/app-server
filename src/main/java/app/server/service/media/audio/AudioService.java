@@ -9,8 +9,4 @@ import org.reactivestreams.Publisher;
 
 import java.io.IOException;
 
-public interface AudioService extends MediaService<Audio> {
-    Publisher<InsertOneResult> saveAudio(String creatorHexId, @NonNull CompletedFileUpload file) throws IOException;
-    Publisher<Audio> getAudio(String hexId);
-    Publisher<Audio> deleteAudio(String hexId);
-}
+public interface AudioService extends MediaService<Audio> {}

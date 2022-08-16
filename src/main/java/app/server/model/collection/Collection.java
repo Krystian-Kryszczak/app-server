@@ -1,5 +1,11 @@
 package app.server.model.collection;
 
-public abstract class Collection<T> {
+import app.server.model.StorageItem;
+import org.bson.types.ObjectId;
+
+public abstract class Collection<T> implements StorageItem {
     // TODO
+    public ObjectId getId() {
+        return null; // TODO
+    }
 }

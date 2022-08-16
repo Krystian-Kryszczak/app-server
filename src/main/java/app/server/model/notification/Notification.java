@@ -1,5 +1,7 @@
 package app.server.model.notification;
 
+import app.server.model.notification.type.NotificationType;
+
 import java.time.LocalDateTime;
 
 public class Notification {

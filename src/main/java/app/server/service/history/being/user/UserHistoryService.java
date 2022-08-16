@@ -1,6 +1,6 @@
 package app.server.service.history.being.user;
 
-import app.server.model.history.user.UserHistory;
+import app.server.model.history.being.user.UserHistory;
 import app.server.service.history.HistoryService;
 import reactor.core.publisher.Mono;
 

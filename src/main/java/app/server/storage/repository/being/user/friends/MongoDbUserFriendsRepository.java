@@ -10,6 +10,7 @@ import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Singleton;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -40,9 +41,9 @@ public class MongoDbUserFriendsRepository extends ExtendedMongoDbRepository<User
     public Mono<UserFriends> findByUserId(@NonNull ObjectId objectId) {
         return Mono.from(getCollection().find(eq("userId",  objectId)));
     }
-    public Mono<List<String>> findFriendsListByUserId(@NonNull ObjectId objectId) {
-        return Mono.from(getDocCollection().find())
-            .map(doc -> doc.getList("friends", String.class));
+    public Flux<String> findFriendsByUserId(@NonNull String userHexId) {
+        if (ObjectId.isValid(userHexId)) throw new RuntimeException("Invalid userHexId ("+userHexId+").");
+        return Mono.from(getDocCollection().find(getBsonEq_userId(new ObjectId(userHexId)))).flatMapIterable(doc -> doc.getList("friends", String.class));
     }
     protected Bson getBsonEq_userId(ObjectId userId) {
         return eq("userId",  userId);

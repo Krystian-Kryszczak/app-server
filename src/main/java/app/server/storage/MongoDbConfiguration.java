@@ -39,9 +39,27 @@ public interface MongoDbConfiguration extends Named {
     @NonNull
     String getResetPasswordCollection();
     @NonNull
+    String getUploadTransactionCollection();
+    @NonNull
     String getUserHistoryCollection();
     @NonNull
     String getGroupHistoryCollection();
+    @NonNull
+    String getPageHistoryCollection();
+    @NonNull
+    String getPostHistoryCollection();
+    @NonNull
+    String getReelHistoryCollection();
+    @NonNull
+    String getSnapHistoryCollection();
+    @NonNull
+    String getSongHistoryCollection();
+    @NonNull
+    String getStoryHistoryCollection();
+    @NonNull
+    String getWatchHistoryCollection();
+    @NonNull
+    String getGroupRulesCollection();
     @NonNull
     String getReportUserCollection();
     @NonNull

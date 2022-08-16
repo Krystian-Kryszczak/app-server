@@ -1,6 +1,6 @@
 package app.server.service.history.being.group;
 
-import app.server.model.history.group.GroupHistory;
+import app.server.model.history.being.group.GroupHistory;
 import app.server.service.history.HistoryServiceImpl;
 import jakarta.inject.Singleton;
 

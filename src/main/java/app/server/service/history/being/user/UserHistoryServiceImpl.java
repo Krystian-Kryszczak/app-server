@@ -1,9 +1,9 @@
 package app.server.service.history.being.user;
 
 import app.server.model.history.type.HistoryType;
-import app.server.model.history.user.UserHistory;
+import app.server.model.history.being.user.UserHistory;
 import app.server.service.history.HistoryServiceImpl;
-import app.server.storage.repository.history.user.UserHistoryRepository;
+import app.server.storage.repository.history.being.user.UserBeingHistoryRepository;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import reactor.core.publisher.Mono;
@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Singleton
 public class UserHistoryServiceImpl extends HistoryServiceImpl<UserHistory> implements UserHistoryService {
     @Inject
-    UserHistoryRepository historyRepo;
+    UserBeingHistoryRepository historyRepo;
     // Post //
     public Mono<Void> userVotePost(@NotBlank String userHexId, @NotBlank String postHexId, boolean up) {
         return historyRepo.addHistory(userHexId, UserHistory.create(userHexId, HistoryType.User.PostVote, postHexId, String.valueOf(up)));
