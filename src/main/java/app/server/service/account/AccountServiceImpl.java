@@ -41,8 +41,7 @@ public class AccountServiceImpl implements AccountService {
     ResetPasswordRepository resetPasswordRepository;
     @Override
     public Publisher<ObjectId> register(@Email String email, @NotNull @Size(min = 2, max = 60) String name, @NotNull @Size(min = 2, max = 60) String lastname,
-                                        @NotNull @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$") String password)
-    {
+    @NotNull @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$") String password) {
         return Mono.create(monoSink -> {
             Mono.from(userRepository.findByEmail(email)).map(existUser -> { // if user with the same e-mail already exists
                 logger.info("Failed: Account has not been created! Because the account with the email " + existUser.getEmail() + " already exits!");
@@ -71,8 +70,7 @@ public class AccountServiceImpl implements AccountService {
         return Mono.from(userRepository.findDocumentByEmail(email)).flatMap(doc -> {
             ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.now().plusHours(24L), ZoneId.of(instanceConfiguration.getZone().orElse("Europe/Warsaw")));
             String code = UUID.randomUUID().toString();
-            Mono<InsertOneResult> resultPublisher
-                    = Mono.from(resetPasswordRepository.save(new ResetCode(code, doc.getString("_id"), dateTime.toLocalDateTime())));
+            Mono<InsertOneResult> resultPublisher = Mono.from(resetPasswordRepository.save(new ResetCode(code, doc.getString("_id"), dateTime.toLocalDateTime())));
             // TODO sending email with template
             return resultPublisher.map(result -> {
                 BsonValue value = result.getInsertedId();

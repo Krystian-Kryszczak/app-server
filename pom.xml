@@ -101,6 +101,22 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>io.micronaut.email</groupId>
+      <artifactId>micronaut-email</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut.email</groupId>
+      <artifactId>micronaut-email-template</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut.views</groupId>
+      <artifactId>micronaut-views-velocity</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut.email</groupId>
+      <artifactId>micronaut-email-javamail</artifactId>
+    </dependency>
+    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>

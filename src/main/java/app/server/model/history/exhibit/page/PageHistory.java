@@ -10,7 +10,7 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.types.ObjectId;
 
 @Introspected
-public class PageHistory extends ExhibitHistory<Page> { // TODO
+public class PageHistory extends ExhibitHistory<Page> {
     @Creator
     @BsonCreator
     protected PageHistory(@NonNull ObjectId id, @NonNull ObjectId userId, @NonNull ObjectId target, @Nullable String content) {
