@@ -1,7 +1,8 @@
 package app.server.model.exhibit.song;
 
 import app.server.model.being.user.User;
-import app.server.model.exhibit.Exhibit;
+import app.server.model.exhibit.ExhibitType;
+import app.server.model.exhibit.MediaExhibit;
 import app.server.service.exhibit.ExhibitService;
 import app.server.service.exhibit.music.SongService;
 import io.micronaut.core.annotation.Creator;
@@ -15,33 +16,22 @@ import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Introspected
-public class Song extends Exhibit<Song> {
+public class Song extends MediaExhibit<Song> {
     @Inject
     static SongService songService;
-    @NonNull
-    @NotBlank
-    @BsonProperty("audio")
-    final String audio;
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Song(@NonNull @BsonId ObjectId hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("datetime") LocalDateTime dateTime, @NonNull @BsonProperty("audio") String audio) {
-        super(hexId, rating, dateTime);
-        this.audio = audio;
+    public Song(@NonNull @BsonId ObjectId hexId, @NonNull @BsonProperty("userHexId") String userHexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("media") String media, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+        super(hexId, userHexId, rating, media, dateTime);
     }
-    public Song(@NonNull @BsonProperty("audio") String audio) {
-        super(); // hexId = null & rating = null
-        this.audio = audio;
+    public Song(@NonNull String userHexId, @NonNull String media) {
+        super(userHexId, media); // hexId = null & rating = null
     }
     // ---------------------------------------------------------------------------------------------------- //
-    @Override
-    public String getUrl() {
-        return abstractUrl("songs");
-    }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
         return getReport().reportSong(getId(), user, content);
@@ -57,5 +47,9 @@ public class Song extends Exhibit<Song> {
     @Override
     protected ExhibitService<Song> getExhibitService() {
         return songService;
+    }
+    @Override
+    protected ExhibitType getType() {
+        return ExhibitType.song;
     }
 }

@@ -30,9 +30,9 @@ public abstract class History {
     final String content;
     @Creator
     @BsonCreator
-    protected History(@NonNull @BsonId ObjectId id, @NonNull @BsonProperty("user") ObjectId userId, @NonNull @BsonProperty("target") ObjectId target, @Nullable @BsonProperty("content") String content) {
+    protected History(@NonNull @BsonId ObjectId id, @NonNull @BsonProperty("user") ObjectId userId, @NonNull @BsonProperty("target") ObjectId target, @Nullable @BsonProperty("content") String content, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
         this.id = id;
-        this.dateTime = LocalDateTime.now();
+        this.dateTime = dateTime;
         this.userId = userId;
         this.target = target;
         this.content = content;

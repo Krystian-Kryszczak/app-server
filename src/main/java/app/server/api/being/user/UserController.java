@@ -35,10 +35,10 @@ public class UserController extends BeingController<User> {
             String hexId = (String) authentication.getAttributes().get("id");
             if (!hexId.isBlank()) {
                 ObjectId clientId = new ObjectId(hexId);
-                return userService.searchUsers(query, clientId);
+                return userService.searchUsers(query, clientId.toHexString());
             }
         }
-        return userService.searchUsers(query);
+        return Flux.empty();
     }
     // Profile //
     @Secured(SecurityRule.IS_ANONYMOUS)
@@ -71,7 +71,7 @@ public class UserController extends BeingController<User> {
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Get("/{userHexId}/video/")
     public Flux<String> video(String userHexId) {
-        return userService.video(userHexId);
+        return userService.watch(userHexId);
     }
         // Shorts //
     @Secured(SecurityRule.IS_ANONYMOUS)
@@ -83,7 +83,7 @@ public class UserController extends BeingController<User> {
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Get("/{userHexId}/images/")
     public Flux<String> images(String userHexId) {
-        return userService.images(userHexId);
+        return userService.posts(userHexId);
     }
         // Music //
     @Secured(SecurityRule.IS_ANONYMOUS)
@@ -101,8 +101,8 @@ public class UserController extends BeingController<User> {
     @Get("/friends/")
     public Mono<HttpResponse<List<String>>> feed(Authentication authentication) {
         if (authentication.getAttributes().get("id") instanceof String) {
-            ObjectId clientId = new ObjectId((String)authentication.getAttributes().get("id"));
-            return userService.proposedFriendsForUser(clientId).map(HttpResponse::ok);
+            String clientHexId = (String)authentication.getAttributes().get("id");
+            return userService.proposedFriendsForUser(clientHexId).map(HttpResponse::ok);
         }
         return Mono.just(HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR));
     }
@@ -111,27 +111,25 @@ public class UserController extends BeingController<User> {
     public Mono<HttpResponse<List<String>>> friends(String userId) {
         if (!ObjectId.isValid(userId))
             return Mono.just(HttpResponse.status(HttpStatus.NOT_ACCEPTABLE));
-        return userService.getUserFriends(userId).collect(Collectors.toList()).map(HttpResponse::ok);
+        return userService.getUserFriendsHexIds(userId).collect(Collectors.toList()).map(HttpResponse::ok);
     }
     @Post("/friends/{friendHexId}")
     public Mono<HttpStatus> addToFriends(@PathVariable String friendHexId, Authentication authentication) {
         if (authentication.getAttributes().get("id") instanceof String) {
-            ObjectId clientId = new ObjectId((String)authentication.getAttributes().get("id"));
+            String clientHexId = (String) authentication.getAttributes().get("id");
             if (!ObjectId.isValid(friendHexId))
                 return Mono.just(HttpStatus.NOT_ACCEPTABLE);
-            ObjectId friendId = new ObjectId(friendHexId);
-            return userService.addToFriends(clientId, friendId);
+            return userService.addToFriends(clientHexId, friendHexId);
         }
         return Mono.just(HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @Delete("/friends/{friendHexId}")
     public Mono<HttpStatus> removeFromFriends(@PathVariable String friendHexId, Authentication authentication) {
         if (authentication.getAttributes().get("id") instanceof String) {
-            ObjectId clientId = new ObjectId((String)authentication.getAttributes().get("id"));
+            String clientHexId = (String)authentication.getAttributes().get("id");
             if (!ObjectId.isValid(friendHexId))
                 return Mono.just(HttpStatus.NOT_ACCEPTABLE);
-            ObjectId friendId = new ObjectId(friendHexId);
-            return userService.removeFromFriends(clientId, friendId);
+            return userService.removeFromFriends(clientHexId, friendHexId);
         }
         return Mono.just(HttpStatus.INTERNAL_SERVER_ERROR);
     }

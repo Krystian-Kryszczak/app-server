@@ -12,6 +12,6 @@ public interface MediaService<T extends Media<T>> {
     Publisher<InsertOneResult> save(String creatorHexId, boolean isPrivate, CompletedFileUpload file) throws IOException;
     Publisher<Boolean> isPrivate(String hexId);
     Publisher<Tuple2<Boolean, String>> getIsPrivateAndCreatorHexId(String hexId);
-    Publisher<T> get(String hexId);
+    Publisher<T> findById(String hexId);
     Publisher<T> delete(String hexId);
 }

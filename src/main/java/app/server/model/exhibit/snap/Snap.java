@@ -1,7 +1,8 @@
 package app.server.model.exhibit.snap;
 
 import app.server.model.being.user.User;
-import app.server.model.exhibit.Exhibit;
+import app.server.model.exhibit.ExhibitType;
+import app.server.model.exhibit.MediaExhibit;
 import app.server.service.exhibit.ExhibitService;
 import app.server.service.exhibit.snap.SnapService;
 import io.micronaut.core.annotation.Creator;
@@ -15,33 +16,22 @@ import org.bson.types.ObjectId;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Introspected
-public class Snap extends Exhibit<Snap> {
+public class Snap extends MediaExhibit<Snap> {
     @Inject
     static SnapService snapService;
-    @NonNull
-    @NotBlank
-    @BsonProperty("video")
-    String video;
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Snap(@NonNull @BsonId ObjectId hexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("video") String video, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
-        super(hexId, rating, dateTime);
-        this.video = video;
+    public Snap(@NonNull @BsonId ObjectId hexId, @NonNull @BsonProperty("userHexId") String userHexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("media") String media, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+        super(hexId, userHexId, rating, media, dateTime);
     }
-    public Snap(@NonNull @BsonProperty("video") String video) {
-        super(); // hexId = null & rating = null
-        this.video = video;
+    public Snap(@NonNull String userHexId, @NonNull String media) {
+        super(userHexId, media); // hexId = null & rating = null
     }
     // ---------------------------------------------------------------------------------------------------- //
-    @Override
-    public String getUrl() {
-        return abstractUrl("snaps");
-    }
     @Override
     public Publisher<Boolean> report(@NonNull User user, @NonNull String content) {
         return getReport().reportSnap(getId(), user, content);
@@ -57,5 +47,9 @@ public class Snap extends Exhibit<Snap> {
     @Override
     protected ExhibitService<Snap> getExhibitService() {
         return snapService;
+    }
+    @Override
+    protected ExhibitType getType() {
+        return ExhibitType.snap;
     }
 }

@@ -34,7 +34,7 @@ public class VideoServiceTest {
         Assertions.assertEquals(response.status(), HttpStatus.OK);
     }
     @Test
-    public void getTest(String hexId) { // TODO
+    public void getTest(String hexId) {
         //when
         HttpRequest<?> request = HttpRequest.GET("/"+hexId+"/").accept(MediaType.ALL);//.contentType(MediaType.APPLICATION_JSON);
         HttpResponse<String> response = client.toBlocking().exchange(request, String.class);
@@ -42,7 +42,7 @@ public class VideoServiceTest {
         Assertions.assertEquals(response.status(), HttpStatus.OK);
     }
     @Test
-    public void fetchTest() { // TODO this
+    public void fetchTest() {
         //when
         HttpRequest<?> request = HttpRequest.GET("/").accept(MediaType.ALL);//.contentType(MediaType.APPLICATION_JSON);
         HttpResponse<String> response = client.toBlocking().exchange(request, String.class);
@@ -50,7 +50,7 @@ public class VideoServiceTest {
         Assertions.assertEquals(response.status(), HttpStatus.OK);
     }
     @Test
-    public void deleteTest(String hexId) { // TODO deleteTest
+    public void deleteTest(String hexId) {
         //when
         HttpRequest<?> request = HttpRequest.DELETE("/").accept(MediaType.ALL);//.contentType(MediaType.APPLICATION_JSON);
         HttpResponse<String> response = client.toBlocking().exchange(request, String.class);

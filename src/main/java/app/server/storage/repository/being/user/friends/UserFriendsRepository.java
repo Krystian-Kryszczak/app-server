@@ -3,15 +3,12 @@ package app.server.storage.repository.being.user.friends;
 import app.server.model.being.user.friends.UserFriends;
 import app.server.storage.repository.Repository;
 import io.micronaut.core.annotation.NonNull;
-import org.bson.types.ObjectId;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 public interface UserFriendsRepository extends Repository<UserFriends> {
-    Mono<Boolean> addUserToFriends(@NonNull ObjectId userId, @NonNull ObjectId friendId);
-    Mono<Boolean> removeUserFromFriends(@NonNull ObjectId userId, @NonNull ObjectId friendId);
-    Mono<UserFriends> findByUserId(@NonNull ObjectId objectId);
+    Mono<Boolean> addUserToFriends(@NonNull String userHexId, @NonNull String friendHexId);
+    Mono<Boolean> removeUserFromFriends(@NonNull String userHexId, @NonNull String friendHexId);
+    Mono<UserFriends> findByUserHexId(@NonNull String userHexId);
     Flux<String> findFriendsByUserId(@NonNull String userHexId);
 }

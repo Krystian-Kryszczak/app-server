@@ -27,7 +27,7 @@ public abstract class MediaServiceImpl<T extends Media<T>> implements MediaServi
     public Publisher<Tuple2<Boolean, String>> getIsPrivateAndCreatorHexId(String hexId) {
         return mediaRepository.getIsPrivateAndCreatorHexId(hexId);
     }
-    public Publisher<T> get(String hexId) {
+    public Publisher<T> findById(String hexId) {
         return mediaRepository.findById(hexId);
     }
     public Publisher<T> delete(String hexId) {

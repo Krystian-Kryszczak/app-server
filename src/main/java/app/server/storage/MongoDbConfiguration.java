@@ -37,6 +37,8 @@ public interface MongoDbConfiguration extends Named {
     @NonNull
     String getCommunicatorCollection();
     @NonNull
+    String getCommentsCollection();
+    @NonNull
     String getResetPasswordCollection();
     @NonNull
     String getUploadTransactionCollection();
@@ -60,6 +62,10 @@ public interface MongoDbConfiguration extends Named {
     String getWatchHistoryCollection();
     @NonNull
     String getGroupRulesCollection();
+    @NonNull
+    String getCommentHistoryCollection();
+    @NonNull
+    String getNotificationCollection();
     @NonNull
     String getReportUserCollection();
     @NonNull

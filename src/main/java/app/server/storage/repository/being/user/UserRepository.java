@@ -6,6 +6,7 @@ import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Singleton;
 import org.bson.Document;
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -17,5 +18,6 @@ public interface UserRepository extends BeingRepository<User> {
     Publisher<User> list();
     Publisher<User> findByEmail(@NonNull @Email String email);
     Publisher<Document> findDocumentByEmail(@NotNull @Email String email);
-    Publisher<User> resetPassword(@NonNull @NotBlank String hexId, @NonNull @NotBlank String newPassword);
+    Publisher<User> changePassword(@NonNull @NotBlank String hexId, @NonNull @NotBlank String newPassword);
+    Flux<String> search(@NonNull String query, @NonNull String userHexId);
 }

@@ -3,6 +3,7 @@ package app.server.media.video;
 import app.server.media.MediaController;
 import app.server.model.media.video.Video;
 import app.server.service.media.video.VideoService;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -27,11 +28,14 @@ public class VideoController extends MediaController<Video> {
         return get(id, authentication, videoService);
     }
     @Post @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Mono<HttpResponse<?>> uploadFile(@Header String exhibitId, @Part Publisher<CompletedFileUpload> file, Authentication authentication) {
-        return uploadFile(exhibitId, file, authentication, videoService);
+    public Mono<HttpResponse<?>> uploadFile(@NonNull @Header String mediaExhibitId, @NonNull @Part Publisher<CompletedFileUpload> file, @NonNull Authentication authentication) {
+        return uploadFile(mediaExhibitId, file, authentication);
     }
     @Delete(value = "/{id}")
     Mono<HttpStatus> delete(@PathVariable String id, Authentication authentication) {
         return delete(id, authentication, videoService);
+    }
+    protected VideoService getService() {
+        return videoService;
     }
 }

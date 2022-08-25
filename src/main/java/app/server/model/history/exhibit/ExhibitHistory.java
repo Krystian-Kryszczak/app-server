@@ -10,11 +10,13 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
+import java.time.LocalDateTime;
+
 public class ExhibitHistory<T extends Exhibit<T>> extends History {
     @Creator
     @BsonCreator
-    protected ExhibitHistory(@NonNull @BsonId ObjectId id, @NonNull @BsonProperty("user") ObjectId userId, @NonNull @BsonProperty("target") ObjectId target, @Nullable @BsonProperty("content") String content) {
-        super(id, userId, target, content);
+    protected ExhibitHistory(@NonNull @BsonId ObjectId id, @NonNull @BsonProperty("user") ObjectId userId, @NonNull @BsonProperty("target") ObjectId target, @Nullable @BsonProperty("content") String content, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+        super(id, userId, target, content, dateTime);
     }
     protected ExhibitHistory(@NonNull ObjectId userId, @NonNull ObjectId target, @Nullable String content) {
         super(userId, target, content);

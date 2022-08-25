@@ -67,7 +67,8 @@ public enum HistoryType {
             AlbumDeleteComment,
             AlbumVoteComment,
             AlbumCancelVoteComment,
-        // // // // // // // // // //
+        // Comment //
+        CommentVote, CommentCancelVote,
     }
     public enum Group {}
 }

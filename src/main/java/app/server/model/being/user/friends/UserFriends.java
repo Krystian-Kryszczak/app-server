@@ -28,44 +28,44 @@ public class UserFriends {
     @BsonId
     private final ObjectId id;
     @NonNull
-    @BsonProperty("userId")
-    private final ObjectId userId;
+    @BsonProperty("userHexId")
+    private final String userId;
     @NonNull
     @BsonProperty("friends")
     private final Set<String> friends;
     @Creator
     @BsonCreator
-    public UserFriends(@Nullable @BsonId ObjectId id, @NonNull @BsonProperty("userId") ObjectId userId, @NonNull @BsonProperty("friends") Set<String> friends) {
+    public UserFriends(@Nullable @BsonId ObjectId id, @NonNull @BsonProperty("userId") String userHexId, @NonNull @BsonProperty("friends") Set<String> friends) {
         this.id = id;
-        this.userId = userId;
+        this.userId = userHexId;
         this.friends = friends;
     }
-    public UserFriends(@NonNull ObjectId userId, @NonNull Set<String> friends) {
+    public UserFriends(@NonNull String userHexId, @NonNull Set<String> friends) {
         this.id = null;
-        this.userId = userId;
+        this.userId = userHexId;
         this.friends = friends;
     }
-    public UserFriends(@NonNull ObjectId userId) {
+    public UserFriends(@NonNull String userHexId) {
         this.id = null;
-        this.userId = userId;
+        this.userId = userHexId;
         this.friends = Set.of();
     }
     public Mono<Boolean> add(@NonNull User user) {
         if (user.getId()==null) return Mono.just(false);
-        return add(user.getId());
+        return add(user.getId().toHexString());
     }
-    public Mono<Boolean> add(@NonNull ObjectId friendId) {
-        if (friendId.equals(userId)) return Mono.just(false);
-        return userFriendsRepository.addUserToFriends(getUserId(), friendId)
-            .map(result -> result && friends.add(friendId.toHexString()));
+    public Mono<Boolean> add(@NonNull String friendHexId) {
+        if (friendHexId.equals(userId)) return Mono.just(false);
+        return userFriendsRepository.addUserToFriends(getUserId(), friendHexId)
+            .map(result -> result && friends.add(friendHexId));
     }
     public Mono<Boolean> remove(@NonNull User user) {
         if (user.getId()==null) return Mono.just(false);
-        return remove(user.getId());
+        return remove(user.getId().toHexString());
     }
-    public Mono<Boolean> remove(@NonNull ObjectId friendId) {
-        if (friendId.equals(userId)) return Mono.just(false);
-        return userFriendsRepository.removeUserFromFriends(getUserId(), friendId)
-            .map(result -> result && friends.remove(friendId.toHexString()));
+    public Mono<Boolean> remove(@NonNull String friendHexId) {
+        if (friendHexId.equals(userId)) return Mono.just(false);
+        return userFriendsRepository.removeUserFromFriends(getUserId(), friendHexId)
+            .map(result -> result && friends.remove(friendHexId));
     }
 }

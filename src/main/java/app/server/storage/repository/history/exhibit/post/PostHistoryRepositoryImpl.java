@@ -8,7 +8,7 @@ import com.mongodb.reactivestreams.client.MongoClient;
 import jakarta.inject.Singleton;
 
 @Singleton
-public class PostHistoryRepositoryImpl extends MongoDbExhibitHistoryRepository<Post, PostHistory> implements PostHistoryRepository{
+public class PostHistoryRepositoryImpl extends MongoDbExhibitHistoryRepository<Post, PostHistory> implements PostHistoryRepository {
     public PostHistoryRepositoryImpl(MongoDbConfiguration mongoConf, MongoClient mongoClient) {
         super(mongoConf, mongoClient, mongoConf.getPostHistoryCollection(), PostHistory.class);
     }

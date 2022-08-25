@@ -16,7 +16,7 @@ public abstract class Report {
     @Creator
     @BsonCreator
     public Report(@BsonId ObjectId id, @NonNull @BsonProperty("userId") ObjectId userId, @NonNull @BsonProperty("idOfEntityReported") ObjectId idOfEntityReported,
-                  @NonNull @BsonProperty("content") String content, @BsonProperty("toAdmin") boolean toAdmin) {
+    @NonNull @BsonProperty("content") String content, @BsonProperty("toAdmin") boolean toAdmin) {
         this.id = id;
         this.userId = userId;
         this.idOfEntityReported = idOfEntityReported;

@@ -10,10 +10,10 @@ import app.server.service.history.exhibit.ExhibitHistoryService;
 import app.server.service.report.ReportService;
 import com.google.gson.Gson;
 import io.micronaut.core.annotation.Creator;
-import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
+import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -25,8 +25,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
-@Introspected
-public abstract class Exhibit<T extends Exhibit<T>> implements StorageItem { // TODO delete & hide exhibit
+public abstract class Exhibit<T extends Exhibit<T>> implements StorageItem {
     @Inject
     static ExhibitHistoryService exhibitHistoryService;
     @Inject
@@ -37,6 +36,9 @@ public abstract class Exhibit<T extends Exhibit<T>> implements StorageItem { // 
     @Nullable
     @BsonId
     final ObjectId id;
+    @NonNull @Getter
+    @BsonProperty("userHexId")
+    final String userHexId;
     @Nullable
     @BsonProperty("rating")
     Integer rating; // voting
@@ -46,13 +48,15 @@ public abstract class Exhibit<T extends Exhibit<T>> implements StorageItem { // 
     // ---------------------------------------------------------------------------------------------------- //
     @Creator
     @BsonCreator
-    public Exhibit(@NonNull @BsonId ObjectId id, @BsonProperty("rating") int rating, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
+    public Exhibit(@NonNull @BsonId ObjectId id, @NonNull @BsonProperty("userHexId") String userHexId, @BsonProperty("rating") int rating, @NonNull @BsonProperty("datetime") LocalDateTime dateTime) {
         this.id = id;
+        this.userHexId = userHexId;
         this.rating = rating;
         this.dateTime = dateTime;
     }
-    public Exhibit() {
+    public Exhibit(@NonNull String userHexId) {
         this.id = null;
+        this.userHexId = userHexId;
         this.rating = null;
         this.dateTime = LocalDateTime.now();
     }
@@ -109,32 +113,30 @@ public abstract class Exhibit<T extends Exhibit<T>> implements StorageItem { // 
     }
     // --------------------------------------------------------------------------- //
     public Flux<Comment> getComments(@NonNull String userHexId, @Nullable SortBy sortBy) {
-        return null; // TODO
+        return getExhibitService().getComments(userHexId, getId().toHexString(), sortBy);
     }
-    public Mono<String> addComment(@NonNull String userHexId, @NonNull @NotBlank String content) {
-        return null; // TODO
+    public Mono<Boolean> addComment(@NonNull String userHexId, @NonNull @NotBlank String content) {
+        return getExhibitService().addComment(userHexId, getType(), getId().toHexString(), content);
     }
-    public Mono<String> editComment(@NonNull String userHexId, @NonNull @NotBlank String hexId, @NonNull @NotBlank String newContent) {
-        return null; // TODO
+    public Mono<Boolean> addNodeComment(@NonNull String userHexId, @NonNull String commentHexId, @NonNull @NotBlank String content) {
+        return getExhibitService().addNodeComment(userHexId, commentHexId, content);
     }
-    public Mono<Boolean> removeComment(@NonNull String userHexId, @NonNull @NotBlank String hexId) {
-        return null; // TODO
+    public Mono<String> editComment(@NonNull String userHexId, @NonNull @NotBlank String commentHexId, @NonNull @NotBlank String newContent) {
+        return getExhibitService().editComment(userHexId, commentHexId, newContent);
     }
-    public Mono<Boolean> hideComment(@NonNull String userHexId, @NonNull @NotBlank String hexId) {
-        return null; // TODO
+    public Mono<Boolean> deleteComment(@NonNull String userHexId, @NonNull @NotBlank String commentHexId) {
+        return getExhibitService().deleteComment(userHexId, commentHexId);
+    }
+    public Mono<Boolean> hideComment(@NonNull String userHexId, @NonNull @NotBlank String commentHexId) {
+        return getExhibitService().hideComment(userHexId, commentHexId);
     }
     // --------------------------------------------------------------------------- //
     public Mono<Boolean> shareOnProfile(@NonNull String userHexId) {
-        return userService.shareOnProfile(userHexId, this.getId().toHexString(), getClassName());
+        return userService.shareOnProfile(userHexId, getType(), getId().toHexString());
     }
     // --------------------------------------------------------------------------- //
     public String getUrl() {
-        ObjectId id = getId();
-        return id!=null ? "/"+this.getClass().getSimpleName().toLowerCase()+"/"+ getId().toHexString()+"/" : "";
-    }
-    protected String abstractUrl(String prefix) {
-        ObjectId id = getId();
-        return id!=null ? "/"+prefix+"/"+ getId().toHexString()+"/" : "";
+        return getId()!=null ? "/"+this.getType().getUrlModifier()+"/"+ getId().toHexString()+"/" : "";
     }
     // --------------------------------------------------------------------------- //
     @SuppressWarnings("all")
@@ -159,6 +161,7 @@ public abstract class Exhibit<T extends Exhibit<T>> implements StorageItem { // 
         return reportService;
     }
     protected abstract ExhibitService<T> getExhibitService();
+    protected abstract ExhibitType getType();
     // --------------------------------------------------------------------------- //
     private String getClassName() {
         return this.getClass().getSimpleName();

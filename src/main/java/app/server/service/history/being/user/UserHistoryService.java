@@ -1,12 +1,14 @@
 package app.server.service.history.being.user;
 
+import app.server.model.being.user.User;
 import app.server.model.history.being.user.UserHistory;
-import app.server.service.history.HistoryService;
+import app.server.model.history.type.HistoryType;
+import app.server.service.history.being.BeingHistoryService;
 import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotBlank;
 
- public interface UserHistoryService extends HistoryService<UserHistory> {
+ public interface UserHistoryService extends BeingHistoryService<User, UserHistory> {
     // Post //
      Mono<Void> userVotePost(@NotBlank String userHexId, @NotBlank String postHexId, boolean up);
      Mono<Void> userCancelVotePost(@NotBlank String userHexId, @NotBlank String postHexId);
@@ -16,13 +18,13 @@ import javax.validation.constraints.NotBlank;
      Mono<Void> userVoteCommentPost(@NotBlank String userHexId, @NotBlank String postHexId, boolean up);
      Mono<Void> userCancelVoteCommentPost(@NotBlank String userHexId, @NotBlank String postHexId);
     // Page //
-     Mono<Void> userVotePage(@NotBlank String userHexId, @NotBlank String pageHexId, boolean up);
-     Mono<Void> userCancelVotePage(@NotBlank String userHexId, @NotBlank String pageHexId);
-     Mono<Void> userCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId, @NotBlank String content);
-     Mono<Void> userEditCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId, @NotBlank String content);
-     Mono<Void> userEditCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId);
-     Mono<Void> userVoteCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId, boolean up);
-     Mono<Void> userCancelVoteCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId);
+//     Mono<Void> userVotePage(@NotBlank String userHexId, @NotBlank String pageHexId, boolean up);
+//     Mono<Void> userCancelVotePage(@NotBlank String userHexId, @NotBlank String pageHexId);
+//     Mono<Void> userCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId, @NotBlank String content);
+//     Mono<Void> userEditCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId, @NotBlank String content);
+//     Mono<Void> userEditCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId);
+//     Mono<Void> userVoteCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId, boolean up);
+//     Mono<Void> userCancelVoteCommentPage(@NotBlank String userHexId, @NotBlank String pageHexId);
     // Watch //
      Mono<Void> userVoteWatch(@NotBlank String userHexId, @NotBlank String watchHexId, boolean up);
      Mono<Void> userCancelVoteWatch(@NotBlank String userHexId, @NotBlank String watchHexId);
@@ -71,4 +73,7 @@ import javax.validation.constraints.NotBlank;
      Mono<Void> userEditCommentAlbum(@NotBlank String userHexId, @NotBlank String albumHexId);
      Mono<Void> userVoteCommentAlbum(@NotBlank String userHexId, @NotBlank String albumHexId, boolean up);
      Mono<Void> userCancelVoteCommentAlbum(@NotBlank String userHexId, @NotBlank String albumHexId);
+     // Comment //
+     Mono<Void> userVoteComment(@NotBlank String userHexId, @NotBlank String commentHexId, boolean up);
+     Mono<Void> userCancelVoteComment(@NotBlank String userHexId, @NotBlank String commentHexId);
 }

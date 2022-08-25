@@ -1,0 +1,9 @@
+<h2>Dear $name,</h2>
+
+<h3>To reset your password click the link below:</h3>
+<h3>https://localhost/reset-password/$code</h3>
+
+<h4>If you did not request a password reset from $appName Account, you can safely ignore this email.</h4><br>
+
+<h5>Yours truly,</h5><br>
+<h5>The $appName team.</h5>

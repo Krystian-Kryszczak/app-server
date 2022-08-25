@@ -13,8 +13,6 @@ import org.bson.types.ObjectId;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 import static com.mongodb.client.model.Filters.*;
 
 @Singleton
@@ -23,29 +21,29 @@ public class MongoDbUserFriendsRepository extends ExtendedMongoDbRepository<User
         super(mongoConf, mongoClient, mongoConf.getUserFriendsCollection(), UserFriends.class);
     }
     @Override
-    public Mono<Boolean> addUserToFriends(@NonNull ObjectId userId, @NonNull ObjectId friendId) {
-        if (userId.equals(friendId)) return Mono.just(false);
-        return Mono.from(getDocCollection().find(getBsonEq_userId(userId)) // find userFriends by userId
-            .projection(Projections.fields(elemMatch("friends", exists(friendId.toHexString(), false)))).first()) // check if list not contains friend id
-                .then(Mono.from(getDocCollection().findOneAndUpdate(getBsonEq_userId(userId), Updates.addToSet("friends", friendId.toHexString())))
+    public Mono<Boolean> addUserToFriends(@NonNull String userHexId, @NonNull String friendHexId) {
+        if (userHexId.equals(friendHexId)) return Mono.just(false);
+        return Mono.from(getDocCollection().find(getBsonEq_userId(userHexId)) // find userFriends by userId
+            .projection(Projections.fields(elemMatch("friends", exists(friendHexId, false)))).first()) // check if list not contains friend id
+                .then(Mono.from(getDocCollection().findOneAndUpdate(getBsonEq_userId(userHexId), Updates.addToSet("friends", friendHexId)))
                     .thenReturn(true)).defaultIfEmpty(false);
     }
     @Override
-    public Mono<Boolean> removeUserFromFriends(@NonNull ObjectId userId, @NonNull ObjectId friendId) {
-        if (userId.equals(friendId)) return Mono.just(false);
-        return Mono.from(getDocCollection().find(getBsonEq_userId(userId)) // find userFriends by userId
-            .projection(Projections.fields(elemMatch("friends", exists(friendId.toHexString(), true)))).first()) // check if list contains friend id
-                .then(Mono.from(getDocCollection().findOneAndUpdate(getBsonEq_userId(userId), Updates.pull("friends", friendId.toHexString())))
+    public Mono<Boolean> removeUserFromFriends(@NonNull String userHexId, @NonNull String friendHexId) {
+        if (userHexId.equals(friendHexId)) return Mono.just(false);
+        return Mono.from(getDocCollection().find(getBsonEq_userId(userHexId)) // find userFriends by userId
+            .projection(Projections.fields(elemMatch("friends", exists(friendHexId, true)))).first()) // check if list contains friend id
+                .then(Mono.from(getDocCollection().findOneAndUpdate(getBsonEq_userId(userHexId), Updates.pull("friends", friendHexId)))
                     .thenReturn(true)).defaultIfEmpty(false);
     }
-    public Mono<UserFriends> findByUserId(@NonNull ObjectId objectId) {
-        return Mono.from(getCollection().find(eq("userId",  objectId)));
+    public Mono<UserFriends> findByUserHexId(@NonNull String userHexId) {
+        return Mono.from(getCollection().find(eq("userHexId",  userHexId)));
     }
     public Flux<String> findFriendsByUserId(@NonNull String userHexId) {
         if (ObjectId.isValid(userHexId)) throw new RuntimeException("Invalid userHexId ("+userHexId+").");
-        return Mono.from(getDocCollection().find(getBsonEq_userId(new ObjectId(userHexId)))).flatMapIterable(doc -> doc.getList("friends", String.class));
+        return Mono.from(getDocCollection().find(getBsonEq_userId(userHexId))).flatMapIterable(doc -> doc.getList("friends", String.class));
     }
-    protected Bson getBsonEq_userId(ObjectId userId) {
-        return eq("userId",  userId);
+    protected Bson getBsonEq_userId(String userHexId) {
+        return eq("userHexId",  userHexId);
     }
 }

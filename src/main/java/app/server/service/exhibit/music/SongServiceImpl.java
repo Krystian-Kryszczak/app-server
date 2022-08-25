@@ -24,7 +24,7 @@ public class SongServiceImpl extends ExhibitServiceImpl<Song> implements SongSer
         return historyService.userCancelVoteSong(userHexId, songHexId);
     }
     @Override
-    public ExhibitRepository<Song> getRepo() {
+    protected ExhibitRepository<Song> getRepo() {
         return songRepo;
     }
 }

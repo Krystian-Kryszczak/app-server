@@ -3,6 +3,7 @@ package app.server.media.image;
 import app.server.media.MediaController;
 import app.server.model.media.image.Image;
 import app.server.service.media.image.ImageService;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -27,11 +28,14 @@ public class ImageController extends MediaController<Image> {
         return get(id, authentication, imageService);
     }
     @Post @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Mono<HttpResponse<?>> uploadFile(@Header String id, @Part Publisher<CompletedFileUpload> file, Authentication authentication) {
-        return uploadFile(id, file, authentication, imageService);
+    public Mono<HttpResponse<?>> uploadFile(@NonNull @Header String mediaExhibitId, @NonNull @Part Publisher<CompletedFileUpload> file, @NonNull Authentication authentication) {
+        return uploadFile(mediaExhibitId, file, authentication);
     }
     @Delete(value = "/{id}")
     Mono<HttpStatus> delete(@PathVariable String id, Authentication authentication) {
         return delete(id, authentication, imageService);
+    }
+    protected ImageService getService() {
+        return imageService;
     }
 }

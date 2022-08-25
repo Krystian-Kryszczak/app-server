@@ -1,77 +1,45 @@
 package app.server.storage.repository.exhibit;
 
 import app.server.model.exhibit.Exhibit;
+import app.server.model.exhibit.ExhibitType;
+import app.server.service.being.community.group.GroupService;
+import app.server.service.being.user.UserService;
 import app.server.storage.MongoDbConfiguration;
-import app.server.storage.repository.ExtendedMongoDbRepository;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Updates;
+import app.server.storage.repository.votable.MongoDbVotableRepository;
 import com.mongodb.reactivestreams.client.MongoClient;
-import io.micronaut.core.annotation.NonNull;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import org.bson.Document;
-import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.validation.constraints.NotBlank;
-
-import static com.mongodb.client.model.Filters.*;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Singleton
-public abstract class ExhibitMongoDbRepository<T extends Exhibit<T>> extends ExtendedMongoDbRepository<T> implements ExhibitRepository<T> {
+public abstract class ExhibitMongoDbRepository<T extends Exhibit<T>> extends MongoDbVotableRepository<T> implements ExhibitRepository<T> {
+    @Inject
+    static UserService userService;
+    @Inject
+    static GroupService groupService;
+    final Class<T> clazz;
     public ExhibitMongoDbRepository(MongoDbConfiguration mongoConf, MongoClient mongoClient, String collectionName, Class<T> clazz) {
         super(mongoConf, mongoClient, collectionName, clazz);
+        this.clazz = clazz;
     }
     // ---------------------------------------------------------------------------------------------------- //
-    @NonNull
-    public Mono<Integer> setUserVote(@NonNull @NotBlank String userHexId, @NonNull @NotBlank String exhibitHexId, boolean up) {
-        Bson bsonId = getBsonEq_id(exhibitHexId); String voteList = up ? "up" : "down", oppositeVoteList = !up ? "up" : "down";
-        return Mono.from(getDocCollection().find(bsonId).projection(Projections.fields(elemMatch(voteList, exists(userHexId)))).first()) // check if exhibit voteList contains userHexId
-            .then( // if user vote value is the same return actual rating
-                Mono.from(getDocCollection().find(bsonId).projection(new Document("rating", 1)))
-                    .map(doc -> doc.getInteger("rating")).switchIfEmpty(Mono.just(0))
-            ).switchIfEmpty(Mono.from(getDocCollection().find(bsonId).projection(Projections.fields(elemMatch(oppositeVoteList, exists(userHexId)))).first()) // else check this
-                .then( // if user vote opposite option (!up list contains userHexId)
-                    Mono.from(getDocCollection().findOneAndUpdate(bsonId, Updates.pull(oppositeVoteList, userHexId))) // remove userHexId from opposite list
-                        .then(Mono.from(getDocCollection().findOneAndUpdate(bsonId, // add userHexId to vote list & double (de)increment
-                            Updates.combine(Updates.addToSet(voteList, userHexId), Updates.inc("rating", up ? 2 : -2),
-                                Projections.fields(eq("rating")) // get only rating field in return document
-                            ))
-                        ).map(doc -> doc.getInteger("rating", 0))) // Then get rating value)
-                ).switchIfEmpty(Mono.from(getDocCollection().findOneAndUpdate(bsonId,
-                    Updates.combine(Updates.addToSet(voteList, userHexId), Updates.inc("rating", up ? 1 : -1), //add userHexId to list & increment
-                        Projections.fields(eq("rating")) // get only rating field in return document
-                    ))
-                ).map(updatedDoc -> updatedDoc.getInteger("rating", 0))) // Then get rating value
-            );
+    public Flux<T> getFeedForUser(String userHexId, int limit, int skip) {
+        if (!ObjectId.isValid(userHexId)) return Flux.empty();
+        return userService.getUserFriendsHexIds(userHexId).collect(Collectors.toList())
+            .flatMap(list -> userService.getDocUserProfile(list.get(new Random().nextInt(list.size()))))
+                .map(doc -> doc.getList("exhibits", String.class).stream().filter(exhibit -> exhibit.endsWith(":"+Objects.requireNonNull(ExhibitType.getTypeByClass(clazz)).getUrlModifier())))
+                    .map(exhibit -> exhibit.map(str -> str.split(":")[0]))
+                        .flatMapMany(Flux::fromStream)
+                            .flatMap(exhibitId -> Mono.from(findById(exhibitId)));
     }
-    @NonNull
-    public Mono<Integer> unsetUserVote(@NonNull @NotBlank String userHexId, @NonNull @NotBlank String exhibitHexId) {
-        Bson bsonId = getBsonEq_id(exhibitHexId);
-        return Mono.from(getDocCollection().findOneAndUpdate(bsonId, Updates.pull("up", userHexId))) // remove userHexId from opposite list
-                .then(Mono.from(getDocCollection().findOneAndUpdate(bsonId, // add userHexId to vote list & double (de)increment
-                    Updates.combine(Updates.pull("up", userHexId), Updates.inc("rating",-1),
-                        Projections.fields(eq("rating")) // get only rating field in return document
-                    ))).map(doc -> doc.getInteger("rating", 0))) // Then get rating value)
-                .switchIfEmpty(Mono.from(getDocCollection().findOneAndUpdate(bsonId, // add userHexId to vote list & double (de)increment
-                    Updates.combine(Updates.pull("down", userHexId), Updates.inc("rating",1),
-                            Projections.fields(eq("rating")) // get only rating field in return document
-                    ))).map(doc -> doc.getInteger("rating", 0))); // Then get rating value
-    }
-    @NonNull
-    public Mono<Boolean> getVote(@NonNull @NotBlank String userHexId, @NonNull @NotBlank String exhibitHexId) {
-        Bson bsonId = getBsonEq_id(exhibitHexId);
-        return Mono.from(getDocCollection().find(bsonId).projection(Projections.fields(elemMatch("up", exists(userHexId)))).first())
-            .thenReturn(true)
-                .switchIfEmpty(Mono.from(getDocCollection().find(bsonId).projection(Projections.fields(elemMatch("down", exists(userHexId)))).first())
-                    .thenReturn(false));
-    }
-    // ---------------------------------------------------------------------------------------------------- //
-    @NonNull
-    @Deprecated
-    public Mono<Integer> incrementRating(@NonNull @NotBlank String exhibitHexId, int value) {
-        Bson bsonId = getBsonEq_id(exhibitHexId);
-        return Mono.from(getDocCollection().find(bsonId).first())
-            .flatMap(doc -> Mono.from(getCollection().findOneAndUpdate(bsonId, Updates.inc("rating", value)))
-                .map(Exhibit::getRating));
+    public Mono<Boolean> uploadByUser(T exhibit, String clientHexId) {
+        if (!ObjectId.isValid(clientHexId)||!exhibit.getUserHexId().equals(clientHexId)) return Mono.just(false);
+        return Mono.from(getCollection().insertOne(exhibit)).thenReturn(true).onErrorReturn(false);
     }
 }

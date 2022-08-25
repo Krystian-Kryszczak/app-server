@@ -1,9 +1,10 @@
 package app.server.service.report;
 
 import app.server.model.being.user.User;
-import app.server.model.report.being.group.GroupReport;
+import app.server.model.exhibit.ExhibitType;
+import app.server.model.report.being.community.group.GroupReport;
 import app.server.model.report.being.user.UserReport;
-import app.server.model.report.exhibit.page.PageReport;
+import app.server.model.report.being.community.page.PageReport;
 import app.server.model.report.exhibit.post.PostReport;
 import app.server.model.report.exhibit.reel.ReelReport;
 import app.server.model.report.exhibit.snap.SnapReport;
@@ -13,9 +14,10 @@ import app.server.model.report.exhibit.watch.WatchReport;
 import app.server.model.report.media.audio.AudioReport;
 import app.server.model.report.media.image.ImageReport;
 import app.server.model.report.media.video.VideoReport;
-import app.server.storage.repository.report.being.group.GroupReportRepository;
+import app.server.storage.repository.report.being.community.group.GroupReportRepository;
 import app.server.storage.repository.report.being.user.UserReportRepository;
-import app.server.storage.repository.report.exhibit.page.PageReportRepository;
+import app.server.storage.repository.report.being.community.page.PageReportRepository;
+import app.server.storage.repository.report.comment.CommentReportRepository;
 import app.server.storage.repository.report.exhibit.post.PostReportRepository;
 import app.server.storage.repository.report.exhibit.reel.ReelReportRepository;
 import app.server.storage.repository.report.exhibit.snap.SnapReportRepository;
@@ -47,6 +49,8 @@ public class ReportServiceImpl implements ReportService {
     @Inject SongReportRepository songReportRepository;
     @Inject StoryReportRepository storyReportRepository;
     @Inject WatchReportRepository watchReportRepository;
+    // Comment
+    @Inject CommentReportRepository commentReportRepository;
     // Media
     @Inject VideoReportRepository videoReportRepository;
     @Inject ImageReportRepository imageReportRepository;
@@ -79,6 +83,10 @@ public class ReportServiceImpl implements ReportService {
     }
     public Publisher<Boolean> reportSong(@NonNull ObjectId id, @NonNull User user, @NonNull @NotBlank String content) {
         return Mono.from(songReportRepository.save(new SongReport(user, id, content, false))).thenReturn(true).onErrorReturn(false);
+    }
+    // ---------------------------------------------[ Comment ]--------------------------------------------- //
+    public Publisher<Boolean> reportComment(@NonNull ObjectId id, ExhibitType type, @NonNull User user, @NonNull String content) {
+        return null;
     }
     // ---------------------------------------------[ Media ]--------------------------------------------- //
     public Publisher<Boolean> reportVideo(@NonNull ObjectId id, @NonNull User user, @NonNull @NotBlank String content) {
@@ -120,6 +128,10 @@ public class ReportServiceImpl implements ReportService {
     }
     public Publisher<Boolean> reportSongToAdmin(@NonNull ObjectId id, @NonNull User user, @NonNull @NotBlank String content) {
         return Mono.from(songReportRepository.save(new SongReport(user, id, content, true))).thenReturn(true).onErrorReturn(false);
+    }
+    // ---------------------------------------------[ Comment ]--------------------------------------------- //
+    public Publisher<Boolean> reportCommentToAdmin(@NonNull ObjectId id, ExhibitType type, @NonNull User user, @NonNull String content) {
+        return null;
     }
     // ---------------------------------------------[ Media ]--------------------------------------------- //
     public Publisher<Boolean> reportVideoToAdmin(@NonNull ObjectId id, @NonNull User user, @NonNull @NotBlank String content) {

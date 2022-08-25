@@ -3,7 +3,6 @@ package app.server.service.history.exhibit;
 import reactor.core.publisher.Flux;
 
 public interface ExhibitHistoryService {
-    Flux<String> getPageHistory(String pageHexId, String userHexId);
     Flux<String> getPostHistory(String postHexId, String userHexId);
     Flux<String> getReelHistory(String reelHexId, String userHexId);
     Flux<String> getSnapHistory(String snapHexId, String userHexId);

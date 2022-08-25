@@ -3,6 +3,7 @@ package app.server.media.audio;
 import app.server.media.MediaController;
 import app.server.model.media.audio.Audio;
 import app.server.service.media.audio.AudioService;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -27,11 +28,14 @@ public class AudioController extends MediaController<Audio> {
         return get(id, authentication, audioService);
     }
     @Post @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Mono<HttpResponse<?>> uploadFile(@Header String id, @Part Publisher<CompletedFileUpload> file, Authentication authentication) {
-        return uploadFile(id, file, authentication, audioService);
+    public Mono<HttpResponse<?>> uploadFile(@NonNull @Header String mediaExhibitId, @NonNull @Part Publisher<CompletedFileUpload> file, @NonNull Authentication authentication) {
+        return uploadFile(mediaExhibitId, file, authentication);
     }
     @Delete(value = "/{id}")
     Mono<HttpStatus> delete(@PathVariable String id, Authentication authentication) {
         return delete(id, authentication, audioService);
+    }
+    protected AudioService getService() {
+        return audioService;
     }
 }

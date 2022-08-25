@@ -17,13 +17,12 @@ public class UserProfile {
     @Nullable
     ObjectId id;
     @NonNull
-    @BsonProperty("userId")
-    ObjectId userId;
+    @BsonProperty("userHexId")
+    String userHexId;
     @Creator
     @BsonCreator
-    public UserProfile(@Nullable ObjectId id, @NonNull ObjectId userId) {
+    public UserProfile(@Nullable ObjectId id, @NonNull String userHexId) {
         this.id = id;
-        this.userId = userId;
+        this.userHexId = userHexId;
     }
-    // TODO
 }

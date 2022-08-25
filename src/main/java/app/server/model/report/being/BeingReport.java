@@ -11,7 +11,6 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.types.ObjectId;
 
-@Introspected
 public abstract class BeingReport<T extends Being> extends Report {
     @Creator
     @BsonCreator
